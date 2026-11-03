@@ -1,0 +1,1609 @@
+{
+  "startedAt": "2026-11-03T14:42:59.603Z",
+  "completedAt": "2026-11-03T14:55:51.845Z",
+  "system": {
+    "node": "v24.22.2",
+    "platform": "darwin",
+    "release": "24.6.0",
+    "arch": "arm64",
+    "cpu": "Apple M4",
+    "logicalCpus": 10,
+    "availableParallelism": 10,
+    "memoryBytes": 17179869184
+  },
+  "versions": {
+    "@tanstack/react-start": "1.168.57",
+    "@tanstack/react-router": "1.170.38",
+    "@tanstack/start-plugin-core": "1.171.47",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "vite": "8.3.0",
+    "@vitejs/plugin-react": "6.1.1"
+  },
+  "lockfileSha256": "b077e2d7bb8d3edb4e7d6fb1a5fe7b91ef632c5b7fb8925270252ceab4970399",
+  "methodology": {
+    "cases": [
+      {
+        "workload": "cpu",
+        "pageCount": 100
+      },
+      {
+        "workload": "cpu",
+        "pageCount": 500
+      },
+      {
+        "workload": "cpu",
+        "pageCount": 1000
+      },
+      {
+        "workload": "io",
+        "pageCount": 100
+      }
+    ],
+    "concurrencies": [
+      1,
+      2,
+      4,
+      8,
+      16
+    ],
+    "repeats": 4,
+    "orders": [
+      [
+        1,
+        2,
+        4,
+        8,
+        16
+      ],
+      [
+        16,
+        8,
+        4,
+        2,
+        1
+      ],
+      [
+        4,
+        8,
+        16,
+        1,
+        2
+      ],
+      [
+        2,
+        1,
+        16,
+        8,
+        4
+      ]
+    ],
+    "cpuIterations": 500000,
+    "ioWaitMs": 15,
+    "renderedRows": 200,
+    "warmup": "One unmeasured 20-page build per workload at concurrency 1 and the maximum tested concurrency. Fresh Node processes still have their own JIT warmup.",
+    "isolation": "Fresh Node process and removed dist directory per build. Dependencies and OS filesystem caches remain warm; the host is not otherwise isolated.",
+    "timing": "Prerender: internal start/end log markers after preview startup and before shutdown. Full build: Vite builder creation through buildApp completion; excludes Node/module startup, cleanup, and output validation.",
+    "cpuMetric": "process.cpuUsage delta during the prerender interval, user plus system time. CPU/wall is process CPU milliseconds divided by elapsed milliseconds; native threads are included, so this is not a count of SSR threads or isolates.",
+    "logging": "All conditions suppress the same per-page prerender log calls and use the same passive aggregate request observer.",
+    "redirects": "Benchmark uses trailingSlash: always and canonical slash-ended paths. Every page must return exactly one 200 response, with zero redirects. No request rewriting. The normal reproduction retains trailingSlash: never.",
+    "outputCheck": "Every page ID and all 200 rendered row values are checked against independently generated expected content outside the timed interval. Complete HTML SHA-256 digests must match across concurrency settings/repeats after replacing only serialized match update timestamps (u:<13-digit milliseconds>); other output assets must match byte-for-byte within each workload/page-count case.",
+    "limits": "Synthetic workloads on one local Node preview server. Async control uses setTimeout, not real network/storage. No custom worker pool, Cloudflare adapter, or deployment is measured. Speedups are relative to the same case at concurrency 1, not a comparison between workloads."
+  },
+  "warmups": [
+    {
+      "workload": "cpu",
+      "pageCount": 20,
+      "concurrency": 1,
+      "repeat": 0,
+      "prerenderMs": 454.48125000000005,
+      "buildMs": 1124.350208,
+      "prerenderCpuMs": 502.806,
+      "requests": 20,
+      "responses": {
+        "200": 20
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "f4ac2afb95d50fa565549f865c7d263ee2afb3cd77f49f3a4a28f03b14b73503",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 20,
+      "concurrency": 16,
+      "repeat": 0,
+      "prerenderMs": 447.887083,
+      "buildMs": 818.7047500000001,
+      "prerenderCpuMs": 514.654,
+      "requests": 20,
+      "responses": {
+        "200": 20
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "f4ac2afb95d50fa565549f865c7d263ee2afb3cd77f49f3a4a28f03b14b73503",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "io",
+      "pageCount": 20,
+      "concurrency": 1,
+      "repeat": 0,
+      "prerenderMs": 420.537542,
+      "buildMs": 791.92075,
+      "prerenderCpuMs": 173.965,
+      "requests": 20,
+      "responses": {
+        "200": 20
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "50de128f96cda7aec662fa2cad262dd9e9addfa282cdd38dc9340ef12a806421",
+      "assetSha256": "0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b"
+    },
+    {
+      "workload": "io",
+      "pageCount": 20,
+      "concurrency": 16,
+      "repeat": 0,
+      "prerenderMs": 107.02070800000007,
+      "buildMs": 491.981541,
+      "prerenderCpuMs": 146.584,
+      "requests": 20,
+      "responses": {
+        "200": 20
+      },
+      "peakActive": 16,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "50de128f96cda7aec662fa2cad262dd9e9addfa282cdd38dc9340ef12a806421",
+      "assetSha256": "0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b"
+    }
+  ],
+  "runs": [
+    {
+      "workload": "cpu",
+      "pageCount": 100,
+      "concurrency": 1,
+      "repeat": 1,
+      "prerenderMs": 1981.6756659999999,
+      "buildMs": 2374.6552500000003,
+      "prerenderCpuMs": 2117.596,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 100,
+      "concurrency": 2,
+      "repeat": 1,
+      "prerenderMs": 1978.4687080000003,
+      "buildMs": 2354.490625,
+      "prerenderCpuMs": 2128.96,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 100,
+      "concurrency": 4,
+      "repeat": 1,
+      "prerenderMs": 2068.5192500000003,
+      "buildMs": 2469.2185,
+      "prerenderCpuMs": 2194.973,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 100,
+      "concurrency": 8,
+      "repeat": 1,
+      "prerenderMs": 1993.0310419999998,
+      "buildMs": 2403.322166,
+      "prerenderCpuMs": 2168.192,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 100,
+      "concurrency": 16,
+      "repeat": 1,
+      "prerenderMs": 2069.8152919999998,
+      "buildMs": 2458.0623339999997,
+      "prerenderCpuMs": 2241.077,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 100,
+      "concurrency": 16,
+      "repeat": 2,
+      "prerenderMs": 2180.867041,
+      "buildMs": 2581.495042,
+      "prerenderCpuMs": 2323.166,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 100,
+      "concurrency": 8,
+      "repeat": 2,
+      "prerenderMs": 2203.499416,
+      "buildMs": 2695.2525,
+      "prerenderCpuMs": 2352.099,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 100,
+      "concurrency": 4,
+      "repeat": 2,
+      "prerenderMs": 2146.4270420000003,
+      "buildMs": 2628.197833,
+      "prerenderCpuMs": 2295.046,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 100,
+      "concurrency": 2,
+      "repeat": 2,
+      "prerenderMs": 2114.174708,
+      "buildMs": 2485.232208,
+      "prerenderCpuMs": 2265.285,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 100,
+      "concurrency": 1,
+      "repeat": 2,
+      "prerenderMs": 2198.81125,
+      "buildMs": 2611.347375,
+      "prerenderCpuMs": 2333.588,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 100,
+      "concurrency": 4,
+      "repeat": 3,
+      "prerenderMs": 2188.96675,
+      "buildMs": 2611.2920830000003,
+      "prerenderCpuMs": 2315.718,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 100,
+      "concurrency": 8,
+      "repeat": 3,
+      "prerenderMs": 2086.374417,
+      "buildMs": 2553.134125,
+      "prerenderCpuMs": 2252.43,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 100,
+      "concurrency": 16,
+      "repeat": 3,
+      "prerenderMs": 2036.8781250000002,
+      "buildMs": 2408.923792,
+      "prerenderCpuMs": 2201.115,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 100,
+      "concurrency": 1,
+      "repeat": 3,
+      "prerenderMs": 2068.5474160000003,
+      "buildMs": 2485.9364579999997,
+      "prerenderCpuMs": 2203.312,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 100,
+      "concurrency": 2,
+      "repeat": 3,
+      "prerenderMs": 1999.594834,
+      "buildMs": 2382.446375,
+      "prerenderCpuMs": 2155.697,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 100,
+      "concurrency": 2,
+      "repeat": 4,
+      "prerenderMs": 2044.136625,
+      "buildMs": 2444.623084,
+      "prerenderCpuMs": 2196.279,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 100,
+      "concurrency": 1,
+      "repeat": 4,
+      "prerenderMs": 1999.189084,
+      "buildMs": 2372.765,
+      "prerenderCpuMs": 2135.366,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 100,
+      "concurrency": 16,
+      "repeat": 4,
+      "prerenderMs": 2018.054167,
+      "buildMs": 2391.339334,
+      "prerenderCpuMs": 2189.287,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 100,
+      "concurrency": 8,
+      "repeat": 4,
+      "prerenderMs": 1994.142375,
+      "buildMs": 2377.5675420000002,
+      "prerenderCpuMs": 2157.14,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 100,
+      "concurrency": 4,
+      "repeat": 4,
+      "prerenderMs": 1988.0634169999998,
+      "buildMs": 2361.090667,
+      "prerenderCpuMs": 2144.875,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 500,
+      "concurrency": 1,
+      "repeat": 1,
+      "prerenderMs": 9726.977832999999,
+      "buildMs": 10098.557583999998,
+      "prerenderCpuMs": 9930.156,
+      "requests": 500,
+      "responses": {
+        "200": 500
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 500,
+      "concurrency": 2,
+      "repeat": 1,
+      "prerenderMs": 9731.824709,
+      "buildMs": 10530.930459,
+      "prerenderCpuMs": 9959.102,
+      "requests": 500,
+      "responses": {
+        "200": 500
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 500,
+      "concurrency": 4,
+      "repeat": 1,
+      "prerenderMs": 9792.942041999999,
+      "buildMs": 10546.946292,
+      "prerenderCpuMs": 10120.678,
+      "requests": 500,
+      "responses": {
+        "200": 500
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 500,
+      "concurrency": 8,
+      "repeat": 1,
+      "prerenderMs": 9964.544583,
+      "buildMs": 10751.456833,
+      "prerenderCpuMs": 10264.548,
+      "requests": 500,
+      "responses": {
+        "200": 500
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 500,
+      "concurrency": 16,
+      "repeat": 1,
+      "prerenderMs": 9912.457292000001,
+      "buildMs": 10785.609916000001,
+      "prerenderCpuMs": 10194.049,
+      "requests": 500,
+      "responses": {
+        "200": 500
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 500,
+      "concurrency": 16,
+      "repeat": 2,
+      "prerenderMs": 9740.480834,
+      "buildMs": 10514.071291999999,
+      "prerenderCpuMs": 10067.791,
+      "requests": 500,
+      "responses": {
+        "200": 500
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 500,
+      "concurrency": 8,
+      "repeat": 2,
+      "prerenderMs": 9775.037667,
+      "buildMs": 10510.569540999999,
+      "prerenderCpuMs": 10117.87,
+      "requests": 500,
+      "responses": {
+        "200": 500
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 500,
+      "concurrency": 4,
+      "repeat": 2,
+      "prerenderMs": 9738.346542,
+      "buildMs": 10545.405958000001,
+      "prerenderCpuMs": 10078.743,
+      "requests": 500,
+      "responses": {
+        "200": 500
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 500,
+      "concurrency": 2,
+      "repeat": 2,
+      "prerenderMs": 9933.889291000001,
+      "buildMs": 10729.450833,
+      "prerenderCpuMs": 10196.331,
+      "requests": 500,
+      "responses": {
+        "200": 500
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 500,
+      "concurrency": 1,
+      "repeat": 2,
+      "prerenderMs": 9971.715457999999,
+      "buildMs": 10706.021917,
+      "prerenderCpuMs": 10119.015,
+      "requests": 500,
+      "responses": {
+        "200": 500
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 500,
+      "concurrency": 4,
+      "repeat": 3,
+      "prerenderMs": 10146.52,
+      "buildMs": 10906.074834,
+      "prerenderCpuMs": 10333.802,
+      "requests": 500,
+      "responses": {
+        "200": 500
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 500,
+      "concurrency": 8,
+      "repeat": 3,
+      "prerenderMs": 10215.770083,
+      "buildMs": 10992.11925,
+      "prerenderCpuMs": 10492.785,
+      "requests": 500,
+      "responses": {
+        "200": 500
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 500,
+      "concurrency": 16,
+      "repeat": 3,
+      "prerenderMs": 9992.111167000001,
+      "buildMs": 10777.328249999999,
+      "prerenderCpuMs": 10308.939,
+      "requests": 500,
+      "responses": {
+        "200": 500
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 500,
+      "concurrency": 1,
+      "repeat": 3,
+      "prerenderMs": 9948.4745,
+      "buildMs": 10722.684000000001,
+      "prerenderCpuMs": 10155.473,
+      "requests": 500,
+      "responses": {
+        "200": 500
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 500,
+      "concurrency": 2,
+      "repeat": 3,
+      "prerenderMs": 10225.365833,
+      "buildMs": 10977.634,
+      "prerenderCpuMs": 10412.833,
+      "requests": 500,
+      "responses": {
+        "200": 500
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 500,
+      "concurrency": 2,
+      "repeat": 4,
+      "prerenderMs": 10010.291417,
+      "buildMs": 10931.932042,
+      "prerenderCpuMs": 10288.206,
+      "requests": 500,
+      "responses": {
+        "200": 500
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 500,
+      "concurrency": 1,
+      "repeat": 4,
+      "prerenderMs": 10288.9915,
+      "buildMs": 11058.312249999999,
+      "prerenderCpuMs": 10413.611,
+      "requests": 500,
+      "responses": {
+        "200": 500
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 500,
+      "concurrency": 16,
+      "repeat": 4,
+      "prerenderMs": 10138.821542,
+      "buildMs": 11009.256542000001,
+      "prerenderCpuMs": 10377.76,
+      "requests": 500,
+      "responses": {
+        "200": 500
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 500,
+      "concurrency": 8,
+      "repeat": 4,
+      "prerenderMs": 10122.272792,
+      "buildMs": 10997.536624999999,
+      "prerenderCpuMs": 10412.912,
+      "requests": 500,
+      "responses": {
+        "200": 500
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 500,
+      "concurrency": 4,
+      "repeat": 4,
+      "prerenderMs": 10039.867792,
+      "buildMs": 10857.220875,
+      "prerenderCpuMs": 10273.022,
+      "requests": 500,
+      "responses": {
+        "200": 500
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 1000,
+      "concurrency": 1,
+      "repeat": 1,
+      "prerenderMs": 20050.874667,
+      "buildMs": 20848.688667,
+      "prerenderCpuMs": 20280.397,
+      "requests": 1000,
+      "responses": {
+        "200": 1000
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 1000,
+      "concurrency": 2,
+      "repeat": 1,
+      "prerenderMs": 20282.911916999998,
+      "buildMs": 21153.074957999997,
+      "prerenderCpuMs": 20679.054,
+      "requests": 1000,
+      "responses": {
+        "200": 1000
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 1000,
+      "concurrency": 4,
+      "repeat": 1,
+      "prerenderMs": 21187.535416,
+      "buildMs": 21914.948833,
+      "prerenderCpuMs": 21311.961,
+      "requests": 1000,
+      "responses": {
+        "200": 1000
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 1000,
+      "concurrency": 8,
+      "repeat": 1,
+      "prerenderMs": 22291.612667,
+      "buildMs": 23517.332375,
+      "prerenderCpuMs": 22104.553,
+      "requests": 1000,
+      "responses": {
+        "200": 1000
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 1000,
+      "concurrency": 16,
+      "repeat": 1,
+      "prerenderMs": 23696.953458,
+      "buildMs": 25170.648583,
+      "prerenderCpuMs": 23265.276,
+      "requests": 1000,
+      "responses": {
+        "200": 1000
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 1000,
+      "concurrency": 16,
+      "repeat": 2,
+      "prerenderMs": 21374.382667,
+      "buildMs": 22539.118833,
+      "prerenderCpuMs": 21419.831,
+      "requests": 1000,
+      "responses": {
+        "200": 1000
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 1000,
+      "concurrency": 8,
+      "repeat": 2,
+      "prerenderMs": 21197.462,
+      "buildMs": 22240.306375,
+      "prerenderCpuMs": 21518.599,
+      "requests": 1000,
+      "responses": {
+        "200": 1000
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 1000,
+      "concurrency": 4,
+      "repeat": 2,
+      "prerenderMs": 21272.484582999998,
+      "buildMs": 22499.511250000003,
+      "prerenderCpuMs": 21558.149,
+      "requests": 1000,
+      "responses": {
+        "200": 1000
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 1000,
+      "concurrency": 2,
+      "repeat": 2,
+      "prerenderMs": 21244.242167,
+      "buildMs": 22140.138291,
+      "prerenderCpuMs": 21490.816,
+      "requests": 1000,
+      "responses": {
+        "200": 1000
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 1000,
+      "concurrency": 1,
+      "repeat": 2,
+      "prerenderMs": 21222.26225,
+      "buildMs": 21930.019,
+      "prerenderCpuMs": 21078.68,
+      "requests": 1000,
+      "responses": {
+        "200": 1000
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 1000,
+      "concurrency": 4,
+      "repeat": 3,
+      "prerenderMs": 20414.902459,
+      "buildMs": 21141.169292,
+      "prerenderCpuMs": 20821.967,
+      "requests": 1000,
+      "responses": {
+        "200": 1000
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 1000,
+      "concurrency": 8,
+      "repeat": 3,
+      "prerenderMs": 21048.869834,
+      "buildMs": 21901.678875,
+      "prerenderCpuMs": 21255.065,
+      "requests": 1000,
+      "responses": {
+        "200": 1000
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 1000,
+      "concurrency": 16,
+      "repeat": 3,
+      "prerenderMs": 20323.643125,
+      "buildMs": 21188.144375000003,
+      "prerenderCpuMs": 20845.186,
+      "requests": 1000,
+      "responses": {
+        "200": 1000
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 1000,
+      "concurrency": 1,
+      "repeat": 3,
+      "prerenderMs": 21293.959792,
+      "buildMs": 22236.62575,
+      "prerenderCpuMs": 21224.192,
+      "requests": 1000,
+      "responses": {
+        "200": 1000
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 1000,
+      "concurrency": 2,
+      "repeat": 3,
+      "prerenderMs": 21506.937375,
+      "buildMs": 22426.245625,
+      "prerenderCpuMs": 21491.929,
+      "requests": 1000,
+      "responses": {
+        "200": 1000
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 1000,
+      "concurrency": 2,
+      "repeat": 4,
+      "prerenderMs": 21595.844707999997,
+      "buildMs": 22619.874625,
+      "prerenderCpuMs": 21687.626,
+      "requests": 1000,
+      "responses": {
+        "200": 1000
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 1000,
+      "concurrency": 1,
+      "repeat": 4,
+      "prerenderMs": 21530.613834,
+      "buildMs": 22742.183708,
+      "prerenderCpuMs": 21521.757,
+      "requests": 1000,
+      "responses": {
+        "200": 1000
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 1000,
+      "concurrency": 16,
+      "repeat": 4,
+      "prerenderMs": 20257.99625,
+      "buildMs": 21164.120499999997,
+      "prerenderCpuMs": 20723.14,
+      "requests": 1000,
+      "responses": {
+        "200": 1000
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 1000,
+      "concurrency": 8,
+      "repeat": 4,
+      "prerenderMs": 21023.648417,
+      "buildMs": 21899.234708,
+      "prerenderCpuMs": 21298.282,
+      "requests": 1000,
+      "responses": {
+        "200": 1000
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "cpu",
+      "pageCount": 1000,
+      "concurrency": 4,
+      "repeat": 4,
+      "prerenderMs": 20525.640792,
+      "buildMs": 21417.930083,
+      "prerenderCpuMs": 20919.615,
+      "requests": 1000,
+      "responses": {
+        "200": 1000
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd",
+      "assetSha256": "329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559"
+    },
+    {
+      "workload": "io",
+      "pageCount": 100,
+      "concurrency": 1,
+      "repeat": 1,
+      "prerenderMs": 2115.621834,
+      "buildMs": 3130.76775,
+      "prerenderCpuMs": 683.822,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812",
+      "assetSha256": "0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b"
+    },
+    {
+      "workload": "io",
+      "pageCount": 100,
+      "concurrency": 2,
+      "repeat": 1,
+      "prerenderMs": 1059.940375,
+      "buildMs": 1559.9106669999999,
+      "prerenderCpuMs": 468.643,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 2,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812",
+      "assetSha256": "0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b"
+    },
+    {
+      "workload": "io",
+      "pageCount": 100,
+      "concurrency": 4,
+      "repeat": 1,
+      "prerenderMs": 564.5125,
+      "buildMs": 960.4372079999999,
+      "prerenderCpuMs": 335.338,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 4,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812",
+      "assetSha256": "0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b"
+    },
+    {
+      "workload": "io",
+      "pageCount": 100,
+      "concurrency": 8,
+      "repeat": 1,
+      "prerenderMs": 341.925042,
+      "buildMs": 727.7280000000001,
+      "prerenderCpuMs": 278.087,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 8,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812",
+      "assetSha256": "0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b"
+    },
+    {
+      "workload": "io",
+      "pageCount": 100,
+      "concurrency": 16,
+      "repeat": 1,
+      "prerenderMs": 230.03875000000005,
+      "buildMs": 681.6192080000001,
+      "prerenderCpuMs": 295.418,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 16,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812",
+      "assetSha256": "0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b"
+    },
+    {
+      "workload": "io",
+      "pageCount": 100,
+      "concurrency": 16,
+      "repeat": 2,
+      "prerenderMs": 234.26600000000002,
+      "buildMs": 628.437084,
+      "prerenderCpuMs": 271.231,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 16,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812",
+      "assetSha256": "0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b"
+    },
+    {
+      "workload": "io",
+      "pageCount": 100,
+      "concurrency": 8,
+      "repeat": 2,
+      "prerenderMs": 337.92604100000005,
+      "buildMs": 800.359458,
+      "prerenderCpuMs": 280.743,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 8,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812",
+      "assetSha256": "0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b"
+    },
+    {
+      "workload": "io",
+      "pageCount": 100,
+      "concurrency": 4,
+      "repeat": 2,
+      "prerenderMs": 566.086416,
+      "buildMs": 960.198959,
+      "prerenderCpuMs": 343.923,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 4,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812",
+      "assetSha256": "0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b"
+    },
+    {
+      "workload": "io",
+      "pageCount": 100,
+      "concurrency": 2,
+      "repeat": 2,
+      "prerenderMs": 1030.513875,
+      "buildMs": 1428.001083,
+      "prerenderCpuMs": 443.453,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 2,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812",
+      "assetSha256": "0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b"
+    },
+    {
+      "workload": "io",
+      "pageCount": 100,
+      "concurrency": 1,
+      "repeat": 2,
+      "prerenderMs": 1965.6185420000002,
+      "buildMs": 2377.510708,
+      "prerenderCpuMs": 610.015,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812",
+      "assetSha256": "0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b"
+    },
+    {
+      "workload": "io",
+      "pageCount": 100,
+      "concurrency": 4,
+      "repeat": 3,
+      "prerenderMs": 562.0705829999999,
+      "buildMs": 1072.443459,
+      "prerenderCpuMs": 337.164,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 4,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812",
+      "assetSha256": "0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b"
+    },
+    {
+      "workload": "io",
+      "pageCount": 100,
+      "concurrency": 8,
+      "repeat": 3,
+      "prerenderMs": 368.878375,
+      "buildMs": 825.103167,
+      "prerenderCpuMs": 331.039,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 8,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812",
+      "assetSha256": "0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b"
+    },
+    {
+      "workload": "io",
+      "pageCount": 100,
+      "concurrency": 16,
+      "repeat": 3,
+      "prerenderMs": 262.880042,
+      "buildMs": 791.708417,
+      "prerenderCpuMs": 316.021,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 16,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812",
+      "assetSha256": "0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b"
+    },
+    {
+      "workload": "io",
+      "pageCount": 100,
+      "concurrency": 1,
+      "repeat": 3,
+      "prerenderMs": 1977.450208,
+      "buildMs": 2389.02975,
+      "prerenderCpuMs": 571.209,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812",
+      "assetSha256": "0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b"
+    },
+    {
+      "workload": "io",
+      "pageCount": 100,
+      "concurrency": 2,
+      "repeat": 3,
+      "prerenderMs": 1062.5934160000002,
+      "buildMs": 1613.698833,
+      "prerenderCpuMs": 454.133,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 2,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812",
+      "assetSha256": "0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b"
+    },
+    {
+      "workload": "io",
+      "pageCount": 100,
+      "concurrency": 2,
+      "repeat": 4,
+      "prerenderMs": 1055.438291,
+      "buildMs": 1457.561625,
+      "prerenderCpuMs": 472.851,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 2,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812",
+      "assetSha256": "0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b"
+    },
+    {
+      "workload": "io",
+      "pageCount": 100,
+      "concurrency": 1,
+      "repeat": 4,
+      "prerenderMs": 1971.3464170000002,
+      "buildMs": 2358.024167,
+      "prerenderCpuMs": 605.099,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 1,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812",
+      "assetSha256": "0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b"
+    },
+    {
+      "workload": "io",
+      "pageCount": 100,
+      "concurrency": 16,
+      "repeat": 4,
+      "prerenderMs": 228.374209,
+      "buildMs": 636.649,
+      "prerenderCpuMs": 264.212,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 16,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812",
+      "assetSha256": "0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b"
+    },
+    {
+      "workload": "io",
+      "pageCount": 100,
+      "concurrency": 8,
+      "repeat": 4,
+      "prerenderMs": 349.765667,
+      "buildMs": 742.520125,
+      "prerenderCpuMs": 296.526,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 8,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812",
+      "assetSha256": "0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b"
+    },
+    {
+      "workload": "io",
+      "pageCount": 100,
+      "concurrency": 4,
+      "repeat": 4,
+      "prerenderMs": 677.7474590000002,
+      "buildMs": 1117.2112499999998,
+      "prerenderCpuMs": 410.665,
+      "requests": 100,
+      "responses": {
+        "200": 100
+      },
+      "peakActive": 4,
+      "activeAtClose": 0,
+      "exactRequestPaths": true,
+      "pageSha256": "ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812",
+      "assetSha256": "0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b"
+    }
+  ]
+}

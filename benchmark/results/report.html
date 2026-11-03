@@ -1,0 +1,1635 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>TanStack Start — prerender concurrency benchmark</title><style>
+:root{color-scheme:light dark}*{box-sizing:border-box}body{margin:0;color:var(--foreground,light-dark(#18212c,#e3e8ef));font:14px/1.55 var(--font-sans,system-ui,sans-serif)}main{max-width:940px;margin:auto}h1{font-size:24px;line-height:1.25;letter-spacing:-.025em;margin:20px 0 10px}h2{font-size:17px;margin:22px 0 8px}p{margin:8px 0 14px}.muted,small{color:var(--muted-foreground,light-dark(#536170,#abb7c6))}code,pre{font-family:var(--font-mono,ui-monospace,monospace);font-size:12px}code{overflow-wrap:anywhere}.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:16px 0}.controls label{display:flex;gap:6px;align-items:center}button,select{color:inherit;background:var(--secondary,light-dark(#eef2f6,#263140));border:1px solid var(--border,light-dark(#cdd5df,#465365));border-radius:var(--radius,6px);padding:7px 10px;font:inherit}button{cursor:pointer}button[aria-pressed="true"]{font-weight:650;border-color:var(--foreground,light-dark(#18212c,#e3e8ef))}button:focus-visible,select:focus-visible{outline:2px solid var(--ring,#4e88db);outline-offset:3px}svg{display:block;width:100%;height:300px;overflow:visible}svg text{font-size:12px;font-family:var(--font-sans,system-ui,sans-serif);fill:var(--muted-foreground,light-dark(#536170,#abb7c6))}svg .value{font-weight:650;font-size:11px;fill:var(--foreground,light-dark(#18212c,#e3e8ef))}.grid{stroke:var(--border,light-dark(#dce2e9,#364354));stroke-width:1}.mobile-chart{display:none}.scroll{overflow-x:auto}table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}th,td{padding:9px 10px 9px 0;text-align:right;border-bottom:1px solid var(--border,light-dark(#dce2e9,#364354));white-space:nowrap}th:first-child,td:first-child{text-align:left}thead th{font-size:12px;font-weight:550}ul{padding-left:20px}li{margin:7px 0}details{margin:16px 0}summary{cursor:pointer;font-weight:600}pre{max-height:260px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}a{color:var(--info,light-dark(#245fbd,#8ab8ff))}[hidden]{display:none!important}@media(max-width:480px){h1{font-size:21px}.desktop-chart{display:none}.mobile-chart{display:block}}
+</style></head><body><main><h1>Prerender concurrency: CPU work and async waiting</h1>
+<p>Repeated local builds of the same route at concurrency 1, 2, 4, 8, 16. The original synchronous CPU workload is preserved; an async-wait control checks I/O overlap.</p>
+<p><strong>1.02× CPU-workload speedup</strong> at 1,000 pages, concurrency 16 vs 1. The async-wait control at 100 pages measured <strong>8.50×</strong> over the same concurrency comparison. Each speedup uses its own case's median prerender time.</p>
+<div class="controls"><label for="case-select">Workload <select id="case-select"><option value="cpu-100" >CPU-bound · 100 pages</option><option value="cpu-500" >CPU-bound · 500 pages</option><option value="cpu-1000" selected>CPU-bound · 1,000 pages</option><option value="io-100" >Async-wait control · 100 pages</option></select></label><div role="group" aria-label="Timing metric"><button type="button" data-metric="prerenderMs" aria-pressed="true">Prerender phase</button> <button type="button" data-metric="buildMs" aria-pressed="false">Full build</button></div></div>
+<section data-case="cpu-100" data-view-metric="prerenderMs" hidden><h2>CPU-bound · 100 pages</h2><div class="desktop-chart"><svg viewBox="0 0 720 300" role="img" aria-label="CPU-bound · 100 pages, prerender time by concurrency. Bars show medians, dots show all runs, whiskers show minimum and maximum."><text x="54" y="14">Seconds · lower is faster</text><line x1="54" x2="710" y1="254" y2="254" class="grid"/><text x="46" y="258" text-anchor="end">0.0</text><line x1="54" x2="710" y1="199" y2="199" class="grid"/><text x="46" y="203" text-anchor="end">0.7</text><line x1="54" x2="710" y1="144" y2="144" class="grid"/><text x="46" y="148" text-anchor="end">1.3</text><line x1="54" x2="710" y1="89" y2="89" class="grid"/><text x="46" y="93" text-anchor="end">2.0</text><line x1="54" x2="710" y1="34" y2="34" class="grid"/><text x="46" y="38" text-anchor="end">2.6</text><text x="119.6" y="277" text-anchor="middle">1</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 1: median 2.034 s; range 1.982–2.199 s</title><rect x="95.6" y="84.78014764795682" width="48" height="169.21985235204318" opacity=".25" stroke="none"/><path d="M119.6 89.12262231825646V71.05672672012483 M114.6 89.12262231825646H124.6 M114.6 71.05672672012483H124.6" fill="none" stroke-width="1.5"/><circle cx="115.1" cy="89.12262231825646" r="2.5" stroke="none"/><circle cx="118.1" cy="71.05672672012483" r="2.5" stroke="none"/><circle cx="121.1" cy="81.89480669717891" r="2.5" stroke="none"/><circle cx="124.1" cy="87.66548859873473" r="2.5" stroke="none"/><path d="M95.6 84.78014764795682H143.6" stroke-width="2.5"/><text class="value" x="119.6" y="62.05672672012483" text-anchor="middle" stroke="none">2.03</text></g><text x="250.79999999999998" y="277" text-anchor="middle">2</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 2: median 2.022 s; range 1.978–2.114 s</title><rect x="226.79999999999998" y="85.7787692385453" width="48" height="168.2212307614547" opacity=".25" stroke="none"/><path d="M250.79999999999998 89.389444399411V78.09857082228213 M245.79999999999998 89.389444399411H255.79999999999998 M245.79999999999998 78.09857082228213H255.79999999999998" fill="none" stroke-width="1.5"/><circle cx="246.29999999999998" cy="89.389444399411" r="2.5" stroke="none"/><circle cx="249.29999999999998" cy="78.09857082228213" r="2.5" stroke="none"/><circle cx="252.29999999999998" cy="87.63172979695797" r="2.5" stroke="none"/><circle cx="255.29999999999998" cy="83.92580868013263" r="2.5" stroke="none"/><path d="M226.79999999999998 85.7787692385453H274.79999999999995" stroke-width="2.5"/><text class="value" x="250.79999999999998" y="69.09857082228213" text-anchor="middle" stroke="none">2.02</text></g><text x="382" y="277" text-anchor="middle">4</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 4: median 2.107 s; range 1.988–2.189 s</title><rect x="358" y="78.65614741662054" width="48" height="175.34385258337946" opacity=".25" stroke="none"/><path d="M382 88.5911551098561V71.87579886822472 M377 88.5911551098561H387 M377 71.87579886822472H387" fill="none" stroke-width="1.5"/><circle cx="377.5" cy="81.89715013626909" r="2.5" stroke="none"/><circle cx="380.5" cy="75.415144696972" r="2.5" stroke="none"/><circle cx="383.5" cy="71.87579886822472" r="2.5" stroke="none"/><circle cx="386.5" cy="88.5911551098561" r="2.5" stroke="none"/><path d="M358 78.65614741662054H406" stroke-width="2.5"/><text class="value" x="382" y="62.87579886822472" text-anchor="middle" stroke="none">2.11</text></g><text x="513.1999999999999" y="277" text-anchor="middle">8</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 8: median 2.040 s; range 1.993–2.203 s</title><rect x="489.19999999999993" y="84.24848117318493" width="48" height="169.75151882681507" opacity=".25" stroke="none"/><path d="M513.1999999999999 88.17784379087549V70.66666666666666 M508.19999999999993 88.17784379087549H518.1999999999999 M508.19999999999993 70.66666666666666H518.1999999999999" fill="none" stroke-width="1.5"/><circle cx="508.69999999999993" cy="88.17784379087549" r="2.5" stroke="none"/><circle cx="511.69999999999993" cy="70.66666666666666" r="2.5" stroke="none"/><circle cx="514.6999999999999" cy="80.41158256154492" r="2.5" stroke="none"/><circle cx="517.6999999999999" cy="88.08537978482497" r="2.5" stroke="none"/><path d="M489.19999999999993 84.24848117318493H537.1999999999999" stroke-width="2.5"/><text class="value" x="513.1999999999999" y="61.66666666666666" text-anchor="middle" stroke="none">2.04</text></g><text x="644.4" y="277" text-anchor="middle">16</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 16: median 2.053 s; range 2.018–2.181 s</title><rect x="620.4" y="83.15952061303683" width="48" height="170.84047938696318" opacity=".25" stroke="none"/><path d="M644.4 86.09589501278391V72.54970267741912 M639.4 86.09589501278391H649.4 M639.4 72.54970267741912H649.4" fill="none" stroke-width="1.5"/><circle cx="639.9" cy="81.78931815851834" r="2.5" stroke="none"/><circle cx="642.9" cy="72.54970267741912" r="2.5" stroke="none"/><circle cx="645.9" cy="84.52972306755537" r="2.5" stroke="none"/><circle cx="648.9" cy="86.09589501278391" r="2.5" stroke="none"/><path d="M620.4 83.15952061303683H668.4" stroke-width="2.5"/><text class="value" x="644.4" y="63.54970267741912" text-anchor="middle" stroke="none">2.05</text></g><text x="382" y="297" text-anchor="middle">prerender.concurrency</text></svg></div><div class="mobile-chart"><svg viewBox="0 0 360 300" role="img" aria-label="CPU-bound · 100 pages, prerender time by concurrency. Bars show medians, dots show all runs, whiskers show minimum and maximum."><text x="42" y="14">Seconds · lower is faster</text><line x1="42" x2="350" y1="254" y2="254" class="grid"/><text x="34" y="258" text-anchor="end">0.0</text><line x1="42" x2="350" y1="199" y2="199" class="grid"/><text x="34" y="203" text-anchor="end">0.7</text><line x1="42" x2="350" y1="144" y2="144" class="grid"/><text x="34" y="148" text-anchor="end">1.3</text><line x1="42" x2="350" y1="89" y2="89" class="grid"/><text x="34" y="93" text-anchor="end">2.0</text><line x1="42" x2="350" y1="34" y2="34" class="grid"/><text x="34" y="38" text-anchor="end">2.6</text><text x="72.8" y="277" text-anchor="middle">1</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 1: median 2.034 s; range 1.982–2.199 s</title><rect x="61.8" y="84.78014764795682" width="22" height="169.21985235204318" opacity=".25" stroke="none"/><path d="M72.8 89.12262231825646V71.05672672012483 M67.8 89.12262231825646H77.8 M67.8 71.05672672012483H77.8" fill="none" stroke-width="1.5"/><circle cx="68.3" cy="89.12262231825646" r="2.5" stroke="none"/><circle cx="71.3" cy="71.05672672012483" r="2.5" stroke="none"/><circle cx="74.3" cy="81.89480669717891" r="2.5" stroke="none"/><circle cx="77.3" cy="87.66548859873473" r="2.5" stroke="none"/><path d="M61.8 84.78014764795682H83.8" stroke-width="2.5"/><text class="value" x="72.8" y="62.05672672012483" text-anchor="middle" stroke="none">2.03</text></g><text x="134.4" y="277" text-anchor="middle">2</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 2: median 2.022 s; range 1.978–2.114 s</title><rect x="123.4" y="85.7787692385453" width="22" height="168.2212307614547" opacity=".25" stroke="none"/><path d="M134.4 89.389444399411V78.09857082228213 M129.4 89.389444399411H139.4 M129.4 78.09857082228213H139.4" fill="none" stroke-width="1.5"/><circle cx="129.9" cy="89.389444399411" r="2.5" stroke="none"/><circle cx="132.9" cy="78.09857082228213" r="2.5" stroke="none"/><circle cx="135.9" cy="87.63172979695797" r="2.5" stroke="none"/><circle cx="138.9" cy="83.92580868013263" r="2.5" stroke="none"/><path d="M123.4 85.7787692385453H145.4" stroke-width="2.5"/><text class="value" x="134.4" y="69.09857082228213" text-anchor="middle" stroke="none">2.02</text></g><text x="196" y="277" text-anchor="middle">4</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 4: median 2.107 s; range 1.988–2.189 s</title><rect x="185" y="78.65614741662054" width="22" height="175.34385258337946" opacity=".25" stroke="none"/><path d="M196 88.5911551098561V71.87579886822472 M191 88.5911551098561H201 M191 71.87579886822472H201" fill="none" stroke-width="1.5"/><circle cx="191.5" cy="81.89715013626909" r="2.5" stroke="none"/><circle cx="194.5" cy="75.415144696972" r="2.5" stroke="none"/><circle cx="197.5" cy="71.87579886822472" r="2.5" stroke="none"/><circle cx="200.5" cy="88.5911551098561" r="2.5" stroke="none"/><path d="M185 78.65614741662054H207" stroke-width="2.5"/><text class="value" x="196" y="62.87579886822472" text-anchor="middle" stroke="none">2.11</text></g><text x="257.6" y="277" text-anchor="middle">8</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 8: median 2.040 s; range 1.993–2.203 s</title><rect x="246.60000000000002" y="84.24848117318493" width="22" height="169.75151882681507" opacity=".25" stroke="none"/><path d="M257.6 88.17784379087549V70.66666666666666 M252.60000000000002 88.17784379087549H262.6 M252.60000000000002 70.66666666666666H262.6" fill="none" stroke-width="1.5"/><circle cx="253.10000000000002" cy="88.17784379087549" r="2.5" stroke="none"/><circle cx="256.1" cy="70.66666666666666" r="2.5" stroke="none"/><circle cx="259.1" cy="80.41158256154492" r="2.5" stroke="none"/><circle cx="262.1" cy="88.08537978482497" r="2.5" stroke="none"/><path d="M246.60000000000002 84.24848117318493H268.6" stroke-width="2.5"/><text class="value" x="257.6" y="61.66666666666666" text-anchor="middle" stroke="none">2.04</text></g><text x="319.2" y="277" text-anchor="middle">16</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 16: median 2.053 s; range 2.018–2.181 s</title><rect x="308.2" y="83.15952061303683" width="22" height="170.84047938696318" opacity=".25" stroke="none"/><path d="M319.2 86.09589501278391V72.54970267741912 M314.2 86.09589501278391H324.2 M314.2 72.54970267741912H324.2" fill="none" stroke-width="1.5"/><circle cx="314.7" cy="81.78931815851834" r="2.5" stroke="none"/><circle cx="317.7" cy="72.54970267741912" r="2.5" stroke="none"/><circle cx="320.7" cy="84.52972306755537" r="2.5" stroke="none"/><circle cx="323.7" cy="86.09589501278391" r="2.5" stroke="none"/><path d="M308.2 83.15952061303683H330.2" stroke-width="2.5"/><text class="value" x="319.2" y="63.54970267741912" text-anchor="middle" stroke="none">2.05</text></g><text x="196" y="297" text-anchor="middle">prerender.concurrency</text></svg></div><div class="scroll"><table><thead><tr><th>Concurrency</th><th>Median</th><th>Min–max</th><th>Speedup vs 1</th><th>CPU / wall¹</th><th>Peak HTTP²</th></tr></thead><tbody><tr><th>1</th><td>2.034 s</td><td>1.982–2.199 s</td><td>1.00×</td><td>1.07</td><td>1</td></tr><tr><th>2</th><td>2.022 s</td><td>1.978–2.114 s</td><td>1.01×</td><td>1.08</td><td>1</td></tr><tr><th>4</th><td>2.107 s</td><td>1.988–2.189 s</td><td>0.97×</td><td>1.07</td><td>1</td></tr><tr><th>8</th><td>2.040 s</td><td>1.993–2.203 s</td><td>1.00×</td><td>1.08</td><td>1</td></tr><tr><th>16</th><td>2.053 s</td><td>2.018–2.181 s</td><td>0.99×</td><td>1.08</td><td>1</td></tr></tbody></table></div></section><section data-case="cpu-100" data-view-metric="buildMs" hidden><h2>CPU-bound · 100 pages</h2><div class="desktop-chart"><svg viewBox="0 0 720 300" role="img" aria-label="CPU-bound · 100 pages, full build time by concurrency. Bars show medians, dots show all runs, whiskers show minimum and maximum."><text x="54" y="14">Seconds · lower is faster</text><line x1="54" x2="710" y1="254" y2="254" class="grid"/><text x="46" y="258" text-anchor="end">0.0</text><line x1="54" x2="710" y1="199" y2="199" class="grid"/><text x="46" y="203" text-anchor="end">0.8</text><line x1="54" x2="710" y1="144" y2="144" class="grid"/><text x="46" y="148" text-anchor="end">1.6</text><line x1="54" x2="710" y1="89" y2="89" class="grid"/><text x="46" y="93" text-anchor="end">2.4</text><line x1="54" x2="710" y1="34" y2="34" class="grid"/><text x="46" y="38" text-anchor="end">3.2</text><text x="119.6" y="277" text-anchor="middle">1</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 1: median 2.430 s; range 2.373–2.611 s</title><rect x="95.6" y="88.6892397280032" width="48" height="165.3107602719968" opacity=".25" stroke="none"/><path d="M119.6 92.6025366207186V76.3739635711311 M114.6 92.6025366207186H124.6 M114.6 76.3739635711311H124.6" fill="none" stroke-width="1.5"/><circle cx="115.1" cy="92.4739602319263" r="2.5" stroke="none"/><circle cx="118.1" cy="76.3739635711311" r="2.5" stroke="none"/><circle cx="121.1" cy="84.90451922408013" r="2.5" stroke="none"/><circle cx="124.1" cy="92.6025366207186" r="2.5" stroke="none"/><path d="M95.6 88.6892397280032H143.6" stroke-width="2.5"/><text class="value" x="119.6" y="67.3739635711311" text-anchor="middle" stroke="none">2.43</text></g><text x="250.79999999999998" y="277" text-anchor="middle">2</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 2: median 2.414 s; range 2.354–2.485 s</title><rect x="226.79999999999998" y="89.82934546021197" width="48" height="164.17065453978802" opacity=".25" stroke="none"/><path d="M250.79999999999998 93.84557491985136V84.95242289915323 M245.79999999999998 93.84557491985136H255.79999999999998 M245.79999999999998 84.95242289915323H255.79999999999998" fill="none" stroke-width="1.5"/><circle cx="246.29999999999998" cy="93.84557491985136" r="2.5" stroke="none"/><circle cx="249.29999999999998" cy="84.95242289915323" r="2.5" stroke="none"/><circle cx="252.29999999999998" cy="91.94400138144138" r="2.5" stroke="none"/><circle cx="255.29999999999998" cy="87.71468953898258" r="2.5" stroke="none"/><path d="M226.79999999999998 89.82934546021197H274.79999999999995" stroke-width="2.5"/><text class="value" x="250.79999999999998" y="75.95242289915323" text-anchor="middle" stroke="none">2.41</text></g><text x="382" y="277" text-anchor="middle">4</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 4: median 2.540 s; range 2.361–2.628 s</title><rect x="358" y="81.20970665704479" width="48" height="172.7902933429552" opacity=".25" stroke="none"/><path d="M382 93.39663453300449V75.22778129940204 M377 93.39663453300449H387 M377 75.22778129940204H387" fill="none" stroke-width="1.5"/><circle cx="377.5" cy="86.04168873479077" r="2.5" stroke="none"/><circle cx="380.5" cy="75.22778129940204" r="2.5" stroke="none"/><circle cx="383.5" cy="76.37772457929884" r="2.5" stroke="none"/><circle cx="386.5" cy="93.39663453300449" r="2.5" stroke="none"/><path d="M358 81.20970665704479H406" stroke-width="2.5"/><text class="value" x="382" y="66.22778129940204" text-anchor="middle" stroke="none">2.54</text></g><text x="513.1999999999999" y="277" text-anchor="middle">8</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 8: median 2.478 s; range 2.378–2.695 s</title><rect x="489.19999999999993" y="85.42884509892858" width="48" height="168.57115490107142" opacity=".25" stroke="none"/><path d="M513.1999999999999 92.27586368995111V70.66666666666666 M508.19999999999993 92.27586368995111H518.1999999999999 M508.19999999999993 70.66666666666666H518.1999999999999" fill="none" stroke-width="1.5"/><circle cx="508.69999999999993" cy="90.5240125863285" r="2.5" stroke="none"/><circle cx="511.69999999999993" cy="70.66666666666666" r="2.5" stroke="none"/><circle cx="514.6999999999999" cy="80.33367761152866" r="2.5" stroke="none"/><circle cx="517.6999999999999" cy="92.27586368995111" r="2.5" stroke="none"/><path d="M489.19999999999993 85.42884509892858H537.1999999999999" stroke-width="2.5"/><text class="value" x="513.1999999999999" y="61.66666666666666" text-anchor="middle" stroke="none">2.48</text></g><text x="644.4" y="277" text-anchor="middle">16</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 16: median 2.433 s; range 2.391–2.581 s</title><rect x="620.4" y="88.47176289296334" width="48" height="165.52823710703666" opacity=".25" stroke="none"/><path d="M644.4 91.33909485907785V78.40454427429958 M639.4 91.33909485907785H649.4 M639.4 78.40454427429958H649.4" fill="none" stroke-width="1.5"/><circle cx="639.9" cy="86.80054049357776" r="2.5" stroke="none"/><circle cx="642.9" cy="78.40454427429958" r="2.5" stroke="none"/><circle cx="645.9" cy="90.14298529234891" r="2.5" stroke="none"/><circle cx="648.9" cy="91.33909485907785" r="2.5" stroke="none"/><path d="M620.4 88.47176289296334H668.4" stroke-width="2.5"/><text class="value" x="644.4" y="69.40454427429958" text-anchor="middle" stroke="none">2.43</text></g><text x="382" y="297" text-anchor="middle">prerender.concurrency</text></svg></div><div class="mobile-chart"><svg viewBox="0 0 360 300" role="img" aria-label="CPU-bound · 100 pages, full build time by concurrency. Bars show medians, dots show all runs, whiskers show minimum and maximum."><text x="42" y="14">Seconds · lower is faster</text><line x1="42" x2="350" y1="254" y2="254" class="grid"/><text x="34" y="258" text-anchor="end">0.0</text><line x1="42" x2="350" y1="199" y2="199" class="grid"/><text x="34" y="203" text-anchor="end">0.8</text><line x1="42" x2="350" y1="144" y2="144" class="grid"/><text x="34" y="148" text-anchor="end">1.6</text><line x1="42" x2="350" y1="89" y2="89" class="grid"/><text x="34" y="93" text-anchor="end">2.4</text><line x1="42" x2="350" y1="34" y2="34" class="grid"/><text x="34" y="38" text-anchor="end">3.2</text><text x="72.8" y="277" text-anchor="middle">1</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 1: median 2.430 s; range 2.373–2.611 s</title><rect x="61.8" y="88.6892397280032" width="22" height="165.3107602719968" opacity=".25" stroke="none"/><path d="M72.8 92.6025366207186V76.3739635711311 M67.8 92.6025366207186H77.8 M67.8 76.3739635711311H77.8" fill="none" stroke-width="1.5"/><circle cx="68.3" cy="92.4739602319263" r="2.5" stroke="none"/><circle cx="71.3" cy="76.3739635711311" r="2.5" stroke="none"/><circle cx="74.3" cy="84.90451922408013" r="2.5" stroke="none"/><circle cx="77.3" cy="92.6025366207186" r="2.5" stroke="none"/><path d="M61.8 88.6892397280032H83.8" stroke-width="2.5"/><text class="value" x="72.8" y="67.3739635711311" text-anchor="middle" stroke="none">2.43</text></g><text x="134.4" y="277" text-anchor="middle">2</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 2: median 2.414 s; range 2.354–2.485 s</title><rect x="123.4" y="89.82934546021197" width="22" height="164.17065453978802" opacity=".25" stroke="none"/><path d="M134.4 93.84557491985136V84.95242289915323 M129.4 93.84557491985136H139.4 M129.4 84.95242289915323H139.4" fill="none" stroke-width="1.5"/><circle cx="129.9" cy="93.84557491985136" r="2.5" stroke="none"/><circle cx="132.9" cy="84.95242289915323" r="2.5" stroke="none"/><circle cx="135.9" cy="91.94400138144138" r="2.5" stroke="none"/><circle cx="138.9" cy="87.71468953898258" r="2.5" stroke="none"/><path d="M123.4 89.82934546021197H145.4" stroke-width="2.5"/><text class="value" x="134.4" y="75.95242289915323" text-anchor="middle" stroke="none">2.41</text></g><text x="196" y="277" text-anchor="middle">4</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 4: median 2.540 s; range 2.361–2.628 s</title><rect x="185" y="81.20970665704479" width="22" height="172.7902933429552" opacity=".25" stroke="none"/><path d="M196 93.39663453300449V75.22778129940204 M191 93.39663453300449H201 M191 75.22778129940204H201" fill="none" stroke-width="1.5"/><circle cx="191.5" cy="86.04168873479077" r="2.5" stroke="none"/><circle cx="194.5" cy="75.22778129940204" r="2.5" stroke="none"/><circle cx="197.5" cy="76.37772457929884" r="2.5" stroke="none"/><circle cx="200.5" cy="93.39663453300449" r="2.5" stroke="none"/><path d="M185 81.20970665704479H207" stroke-width="2.5"/><text class="value" x="196" y="66.22778129940204" text-anchor="middle" stroke="none">2.54</text></g><text x="257.6" y="277" text-anchor="middle">8</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 8: median 2.478 s; range 2.378–2.695 s</title><rect x="246.60000000000002" y="85.42884509892858" width="22" height="168.57115490107142" opacity=".25" stroke="none"/><path d="M257.6 92.27586368995111V70.66666666666666 M252.60000000000002 92.27586368995111H262.6 M252.60000000000002 70.66666666666666H262.6" fill="none" stroke-width="1.5"/><circle cx="253.10000000000002" cy="90.5240125863285" r="2.5" stroke="none"/><circle cx="256.1" cy="70.66666666666666" r="2.5" stroke="none"/><circle cx="259.1" cy="80.33367761152866" r="2.5" stroke="none"/><circle cx="262.1" cy="92.27586368995111" r="2.5" stroke="none"/><path d="M246.60000000000002 85.42884509892858H268.6" stroke-width="2.5"/><text class="value" x="257.6" y="61.66666666666666" text-anchor="middle" stroke="none">2.48</text></g><text x="319.2" y="277" text-anchor="middle">16</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 16: median 2.433 s; range 2.391–2.581 s</title><rect x="308.2" y="88.47176289296334" width="22" height="165.52823710703666" opacity=".25" stroke="none"/><path d="M319.2 91.33909485907785V78.40454427429958 M314.2 91.33909485907785H324.2 M314.2 78.40454427429958H324.2" fill="none" stroke-width="1.5"/><circle cx="314.7" cy="86.80054049357776" r="2.5" stroke="none"/><circle cx="317.7" cy="78.40454427429958" r="2.5" stroke="none"/><circle cx="320.7" cy="90.14298529234891" r="2.5" stroke="none"/><circle cx="323.7" cy="91.33909485907785" r="2.5" stroke="none"/><path d="M308.2 88.47176289296334H330.2" stroke-width="2.5"/><text class="value" x="319.2" y="69.40454427429958" text-anchor="middle" stroke="none">2.43</text></g><text x="196" y="297" text-anchor="middle">prerender.concurrency</text></svg></div><div class="scroll"><table><thead><tr><th>Concurrency</th><th>Median</th><th>Min–max</th><th>Speedup vs 1</th><th>CPU / wall¹</th><th>Peak HTTP²</th></tr></thead><tbody><tr><th>1</th><td>2.430 s</td><td>2.373–2.611 s</td><td>1.00×</td><td>1.07</td><td>1</td></tr><tr><th>2</th><td>2.414 s</td><td>2.354–2.485 s</td><td>1.01×</td><td>1.08</td><td>1</td></tr><tr><th>4</th><td>2.540 s</td><td>2.361–2.628 s</td><td>0.96×</td><td>1.07</td><td>1</td></tr><tr><th>8</th><td>2.478 s</td><td>2.378–2.695 s</td><td>0.98×</td><td>1.08</td><td>1</td></tr><tr><th>16</th><td>2.433 s</td><td>2.391–2.581 s</td><td>1.00×</td><td>1.08</td><td>1</td></tr></tbody></table></div></section><section data-case="cpu-500" data-view-metric="prerenderMs" hidden><h2>CPU-bound · 500 pages</h2><div class="desktop-chart"><svg viewBox="0 0 720 300" role="img" aria-label="CPU-bound · 500 pages, prerender time by concurrency. Bars show medians, dots show all runs, whiskers show minimum and maximum."><text x="54" y="14">Seconds · lower is faster</text><line x1="54" x2="710" y1="254" y2="254" class="grid"/><text x="46" y="258" text-anchor="end">0.0</text><line x1="54" x2="710" y1="199" y2="199" class="grid"/><text x="46" y="203" text-anchor="end">3.1</text><line x1="54" x2="710" y1="144" y2="144" class="grid"/><text x="46" y="148" text-anchor="end">6.2</text><line x1="54" x2="710" y1="89" y2="89" class="grid"/><text x="46" y="93" text-anchor="end">9.3</text><line x1="54" x2="710" y1="34" y2="34" class="grid"/><text x="46" y="38" text-anchor="end">12.3</text><text x="119.6" y="277" text-anchor="middle">1</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 1: median 9.960 s; range 9.727–10.289 s</title><rect x="95.6" y="76.5270753876445" width="48" height="177.47292461235548" opacity=".25" stroke="none"/><path d="M119.6 80.68084919855042V70.66666666666669 M114.6 80.68084919855042H124.6 M114.6 70.66666666666669H124.6" fill="none" stroke-width="1.5"/><circle cx="115.1" cy="80.68084919855042" r="2.5" stroke="none"/><circle cx="118.1" cy="76.32001708168713" r="2.5" stroke="none"/><circle cx="121.1" cy="76.73413369360188" r="2.5" stroke="none"/><circle cx="124.1" cy="70.66666666666669" r="2.5" stroke="none"/><path d="M95.6 76.5270753876445H143.6" stroke-width="2.5"/><text class="value" x="119.6" y="61.666666666666686" text-anchor="middle" stroke="none">9.96</text></g><text x="250.79999999999998" y="277" text-anchor="middle">2</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 2: median 9.972 s; range 9.732–10.225 s</title><rect x="226.79999999999998" y="76.3133370359962" width="48" height="177.6866629640038" opacity=".25" stroke="none"/><path d="M250.79999999999998 80.59448563868804V71.80037404864544 M245.79999999999998 80.59448563868804H255.79999999999998 M245.79999999999998 71.80037404864544H255.79999999999998" fill="none" stroke-width="1.5"/><circle cx="246.29999999999998" cy="80.59448563868804" r="2.5" stroke="none"/><circle cx="249.29999999999998" cy="76.9940187351371" r="2.5" stroke="none"/><circle cx="252.29999999999998" cy="71.80037404864544" r="2.5" stroke="none"/><circle cx="255.29999999999998" cy="75.63265533685527" r="2.5" stroke="none"/><path d="M226.79999999999998 76.3133370359962H274.79999999999995" stroke-width="2.5"/><text class="value" x="250.79999999999998" y="62.80037404864544" text-anchor="middle" stroke="none">9.97</text></g><text x="382" y="277" text-anchor="middle">4</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 4: median 9.916 s; range 9.738–10.147 s</title><rect x="358" y="77.30556224906334" width="48" height="176.69443775093666" opacity=".25" stroke="none"/><path d="M382 80.47827703035814V73.20528038794345 M377 80.47827703035814H387 M377 73.20528038794345H387" fill="none" stroke-width="1.5"/><circle cx="377.5" cy="79.50547274725616" r="2.5" stroke="none"/><circle cx="380.5" cy="80.47827703035814" r="2.5" stroke="none"/><circle cx="383.5" cy="73.20528038794345" r="2.5" stroke="none"/><circle cx="386.5" cy="75.10565175087052" r="2.5" stroke="none"/><path d="M358 77.30556224906334H406" stroke-width="2.5"/><text class="value" x="382" y="64.20528038794345" text-anchor="middle" stroke="none">9.92</text></g><text x="513.1999999999999" y="277" text-anchor="middle">8</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 8: median 10.043 s; range 9.775–10.216 s</title><rect x="489.19999999999993" y="75.04255866978478" width="48" height="178.9574413302152" opacity=".25" stroke="none"/><path d="M513.1999999999999 79.82450000566139V71.97135492984583 M508.19999999999993 79.82450000566139H518.1999999999999 M508.19999999999993 71.97135492984583H518.1999999999999" fill="none" stroke-width="1.5"/><circle cx="508.69999999999993" cy="76.4477905779201" r="2.5" stroke="none"/><circle cx="511.69999999999993" cy="79.82450000566139" r="2.5" stroke="none"/><circle cx="514.6999999999999" cy="71.97135492984583" r="2.5" stroke="none"/><circle cx="517.6999999999999" cy="73.6373267616494" r="2.5" stroke="none"/><path d="M489.19999999999993 75.04255866978478H537.1999999999999" stroke-width="2.5"/><text class="value" x="513.1999999999999" y="62.97135492984583" text-anchor="middle" stroke="none">10.04</text></g><text x="644.4" y="277" text-anchor="middle">16</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 16: median 9.952 s; range 9.740–10.139 s</title><rect x="620.4" y="76.66625042162781" width="48" height="177.3337495783722" opacity=".25" stroke="none"/><path d="M644.4 80.44024736859132V73.34245456742127 M639.4 80.44024736859132H649.4 M639.4 73.34245456742127H649.4" fill="none" stroke-width="1.5"/><circle cx="639.9" cy="77.37590259777483" r="2.5" stroke="none"/><circle cx="642.9" cy="80.44024736859132" r="2.5" stroke="none"/><circle cx="645.9" cy="75.95659824548076" r="2.5" stroke="none"/><circle cx="648.9" cy="73.34245456742127" r="2.5" stroke="none"/><path d="M620.4 76.66625042162781H668.4" stroke-width="2.5"/><text class="value" x="644.4" y="64.34245456742127" text-anchor="middle" stroke="none">9.95</text></g><text x="382" y="297" text-anchor="middle">prerender.concurrency</text></svg></div><div class="mobile-chart"><svg viewBox="0 0 360 300" role="img" aria-label="CPU-bound · 500 pages, prerender time by concurrency. Bars show medians, dots show all runs, whiskers show minimum and maximum."><text x="42" y="14">Seconds · lower is faster</text><line x1="42" x2="350" y1="254" y2="254" class="grid"/><text x="34" y="258" text-anchor="end">0.0</text><line x1="42" x2="350" y1="199" y2="199" class="grid"/><text x="34" y="203" text-anchor="end">3.1</text><line x1="42" x2="350" y1="144" y2="144" class="grid"/><text x="34" y="148" text-anchor="end">6.2</text><line x1="42" x2="350" y1="89" y2="89" class="grid"/><text x="34" y="93" text-anchor="end">9.3</text><line x1="42" x2="350" y1="34" y2="34" class="grid"/><text x="34" y="38" text-anchor="end">12.3</text><text x="72.8" y="277" text-anchor="middle">1</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 1: median 9.960 s; range 9.727–10.289 s</title><rect x="61.8" y="76.5270753876445" width="22" height="177.47292461235548" opacity=".25" stroke="none"/><path d="M72.8 80.68084919855042V70.66666666666669 M67.8 80.68084919855042H77.8 M67.8 70.66666666666669H77.8" fill="none" stroke-width="1.5"/><circle cx="68.3" cy="80.68084919855042" r="2.5" stroke="none"/><circle cx="71.3" cy="76.32001708168713" r="2.5" stroke="none"/><circle cx="74.3" cy="76.73413369360188" r="2.5" stroke="none"/><circle cx="77.3" cy="70.66666666666669" r="2.5" stroke="none"/><path d="M61.8 76.5270753876445H83.8" stroke-width="2.5"/><text class="value" x="72.8" y="61.666666666666686" text-anchor="middle" stroke="none">9.96</text></g><text x="134.4" y="277" text-anchor="middle">2</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 2: median 9.972 s; range 9.732–10.225 s</title><rect x="123.4" y="76.3133370359962" width="22" height="177.6866629640038" opacity=".25" stroke="none"/><path d="M134.4 80.59448563868804V71.80037404864544 M129.4 80.59448563868804H139.4 M129.4 71.80037404864544H139.4" fill="none" stroke-width="1.5"/><circle cx="129.9" cy="80.59448563868804" r="2.5" stroke="none"/><circle cx="132.9" cy="76.9940187351371" r="2.5" stroke="none"/><circle cx="135.9" cy="71.80037404864544" r="2.5" stroke="none"/><circle cx="138.9" cy="75.63265533685527" r="2.5" stroke="none"/><path d="M123.4 76.3133370359962H145.4" stroke-width="2.5"/><text class="value" x="134.4" y="62.80037404864544" text-anchor="middle" stroke="none">9.97</text></g><text x="196" y="277" text-anchor="middle">4</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 4: median 9.916 s; range 9.738–10.147 s</title><rect x="185" y="77.30556224906334" width="22" height="176.69443775093666" opacity=".25" stroke="none"/><path d="M196 80.47827703035814V73.20528038794345 M191 80.47827703035814H201 M191 73.20528038794345H201" fill="none" stroke-width="1.5"/><circle cx="191.5" cy="79.50547274725616" r="2.5" stroke="none"/><circle cx="194.5" cy="80.47827703035814" r="2.5" stroke="none"/><circle cx="197.5" cy="73.20528038794345" r="2.5" stroke="none"/><circle cx="200.5" cy="75.10565175087052" r="2.5" stroke="none"/><path d="M185 77.30556224906334H207" stroke-width="2.5"/><text class="value" x="196" y="64.20528038794345" text-anchor="middle" stroke="none">9.92</text></g><text x="257.6" y="277" text-anchor="middle">8</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 8: median 10.043 s; range 9.775–10.216 s</title><rect x="246.60000000000002" y="75.04255866978478" width="22" height="178.9574413302152" opacity=".25" stroke="none"/><path d="M257.6 79.82450000566139V71.97135492984583 M252.60000000000002 79.82450000566139H262.6 M252.60000000000002 71.97135492984583H262.6" fill="none" stroke-width="1.5"/><circle cx="253.10000000000002" cy="76.4477905779201" r="2.5" stroke="none"/><circle cx="256.1" cy="79.82450000566139" r="2.5" stroke="none"/><circle cx="259.1" cy="71.97135492984583" r="2.5" stroke="none"/><circle cx="262.1" cy="73.6373267616494" r="2.5" stroke="none"/><path d="M246.60000000000002 75.04255866978478H268.6" stroke-width="2.5"/><text class="value" x="257.6" y="62.97135492984583" text-anchor="middle" stroke="none">10.04</text></g><text x="319.2" y="277" text-anchor="middle">16</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 16: median 9.952 s; range 9.740–10.139 s</title><rect x="308.2" y="76.66625042162781" width="22" height="177.3337495783722" opacity=".25" stroke="none"/><path d="M319.2 80.44024736859132V73.34245456742127 M314.2 80.44024736859132H324.2 M314.2 73.34245456742127H324.2" fill="none" stroke-width="1.5"/><circle cx="314.7" cy="77.37590259777483" r="2.5" stroke="none"/><circle cx="317.7" cy="80.44024736859132" r="2.5" stroke="none"/><circle cx="320.7" cy="75.95659824548076" r="2.5" stroke="none"/><circle cx="323.7" cy="73.34245456742127" r="2.5" stroke="none"/><path d="M308.2 76.66625042162781H330.2" stroke-width="2.5"/><text class="value" x="319.2" y="64.34245456742127" text-anchor="middle" stroke="none">9.95</text></g><text x="196" y="297" text-anchor="middle">prerender.concurrency</text></svg></div><div class="scroll"><table><thead><tr><th>Concurrency</th><th>Median</th><th>Min–max</th><th>Speedup vs 1</th><th>CPU / wall¹</th><th>Peak HTTP²</th></tr></thead><tbody><tr><th>1</th><td>9.960 s</td><td>9.727–10.289 s</td><td>1.00×</td><td>1.02</td><td>1</td></tr><tr><th>2</th><td>9.972 s</td><td>9.732–10.225 s</td><td>1.00×</td><td>1.02</td><td>1</td></tr><tr><th>4</th><td>9.916 s</td><td>9.738–10.147 s</td><td>1.00×</td><td>1.03</td><td>1</td></tr><tr><th>8</th><td>10.043 s</td><td>9.775–10.216 s</td><td>0.99×</td><td>1.03</td><td>1</td></tr><tr><th>16</th><td>9.952 s</td><td>9.740–10.139 s</td><td>1.00×</td><td>1.03</td><td>1</td></tr></tbody></table></div></section><section data-case="cpu-500" data-view-metric="buildMs" hidden><h2>CPU-bound · 500 pages</h2><div class="desktop-chart"><svg viewBox="0 0 720 300" role="img" aria-label="CPU-bound · 500 pages, full build time by concurrency. Bars show medians, dots show all runs, whiskers show minimum and maximum."><text x="54" y="14">Seconds · lower is faster</text><line x1="54" x2="710" y1="254" y2="254" class="grid"/><text x="46" y="258" text-anchor="end">0.0</text><line x1="54" x2="710" y1="199" y2="199" class="grid"/><text x="46" y="203" text-anchor="end">3.3</text><line x1="54" x2="710" y1="144" y2="144" class="grid"/><text x="46" y="148" text-anchor="end">6.6</text><line x1="54" x2="710" y1="89" y2="89" class="grid"/><text x="46" y="93" text-anchor="end">10.0</text><line x1="54" x2="710" y1="34" y2="34" class="grid"/><text x="46" y="38" text-anchor="end">13.3</text><text x="119.6" y="277" text-anchor="middle">1</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 1: median 10.714 s; range 10.099–11.058 s</title><rect x="95.6" y="76.36909231861608" width="48" height="177.63090768138392" opacity=".25" stroke="none"/><path d="M119.6 86.57822876783632V70.66666666666666 M114.6 86.57822876783632H124.6 M114.6 70.66666666666666H124.6" fill="none" stroke-width="1.5"/><circle cx="115.1" cy="86.57822876783632" r="2.5" stroke="none"/><circle cx="118.1" cy="76.50721082836728" r="2.5" stroke="none"/><circle cx="121.1" cy="76.23097380886489" r="2.5" stroke="none"/><circle cx="124.1" cy="70.66666666666666" r="2.5" stroke="none"/><path d="M95.6 76.36909231861608H143.6" stroke-width="2.5"/><text class="value" x="119.6" y="61.66666666666666" text-anchor="middle" stroke="none">10.71</text></g><text x="250.79999999999998" y="277" text-anchor="middle">2</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 2: median 10.831 s; range 10.531–10.978 s</title><rect x="226.79999999999998" y="74.44034219221228" width="48" height="179.55965780778772" opacity=".25" stroke="none"/><path d="M250.79999999999998 79.41001370710978V72.00421367796577 M245.79999999999998 79.41001370710978H255.79999999999998 M245.79999999999998 72.00421367796577H255.79999999999998" fill="none" stroke-width="1.5"/><circle cx="246.29999999999998" cy="79.41001370710978" r="2.5" stroke="none"/><circle cx="249.29999999999998" cy="76.11878796875172" r="2.5" stroke="none"/><circle cx="252.29999999999998" cy="72.00421367796577" r="2.5" stroke="none"/><circle cx="255.29999999999998" cy="72.76189641567287" r="2.5" stroke="none"/><path d="M226.79999999999998 74.44034219221228H274.79999999999995" stroke-width="2.5"/><text class="value" x="250.79999999999998" y="63.004213677965765" text-anchor="middle" stroke="none">10.83</text></g><text x="382" y="277" text-anchor="middle">4</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 4: median 10.702 s; range 10.545–10.906 s</title><rect x="358" y="76.57250359565494" width="48" height="177.42749640434505" opacity=".25" stroke="none"/><path d="M382 79.17002758415202V73.19057739575044 M377 79.17002758415202H387 M377 73.19057739575044H387" fill="none" stroke-width="1.5"/><circle cx="377.5" cy="79.14449072461305" r="2.5" stroke="none"/><circle cx="380.5" cy="79.17002758415202" r="2.5" stroke="none"/><circle cx="383.5" cy="73.19057739575044" r="2.5" stroke="none"/><circle cx="386.5" cy="74.00051646669677" r="2.5" stroke="none"/><path d="M358 76.57250359565494H406" stroke-width="2.5"/><text class="value" x="382" y="64.19057739575044" text-anchor="middle" stroke="none">10.70</text></g><text x="513.1999999999999" y="277" text-anchor="middle">8</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 8: median 10.872 s; range 10.511–10.998 s</title><rect x="489.19999999999993" y="73.75901060836235" width="48" height="180.24098939163764" opacity=".25" stroke="none"/><path d="M513.1999999999999 79.74757290079836V71.67425242340515 M508.19999999999993 79.74757290079836H518.1999999999999 M508.19999999999993 71.67425242340515H518.1999999999999" fill="none" stroke-width="1.5"/><circle cx="508.69999999999993" cy="75.75395532140689" r="2.5" stroke="none"/><circle cx="511.69999999999993" cy="79.74757290079836" r="2.5" stroke="none"/><circle cx="514.6999999999999" cy="71.76406589531778" r="2.5" stroke="none"/><circle cx="517.6999999999999" cy="71.67425242340515" r="2.5" stroke="none"/><path d="M489.19999999999993 73.75901060836235H537.1999999999999" stroke-width="2.5"/><text class="value" x="513.1999999999999" y="62.67425242340515" text-anchor="middle" stroke="none">10.87</text></g><text x="644.4" y="277" text-anchor="middle">16</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 16: median 10.781 s; range 10.514–11.009 s</title><rect x="620.4" y="75.25638881135168" width="48" height="178.74361118864832" opacity=".25" stroke="none"/><path d="M644.4 79.68951813902102V71.47995049003367 M639.4 79.68951813902102H649.4 M639.4 71.47995049003367H649.4" fill="none" stroke-width="1.5"/><circle cx="639.9" cy="75.18773884926847" r="2.5" stroke="none"/><circle cx="642.9" cy="79.68951813902102" r="2.5" stroke="none"/><circle cx="645.9" cy="75.3250387734349" r="2.5" stroke="none"/><circle cx="648.9" cy="71.47995049003367" r="2.5" stroke="none"/><path d="M620.4 75.25638881135168H668.4" stroke-width="2.5"/><text class="value" x="644.4" y="62.47995049003367" text-anchor="middle" stroke="none">10.78</text></g><text x="382" y="297" text-anchor="middle">prerender.concurrency</text></svg></div><div class="mobile-chart"><svg viewBox="0 0 360 300" role="img" aria-label="CPU-bound · 500 pages, full build time by concurrency. Bars show medians, dots show all runs, whiskers show minimum and maximum."><text x="42" y="14">Seconds · lower is faster</text><line x1="42" x2="350" y1="254" y2="254" class="grid"/><text x="34" y="258" text-anchor="end">0.0</text><line x1="42" x2="350" y1="199" y2="199" class="grid"/><text x="34" y="203" text-anchor="end">3.3</text><line x1="42" x2="350" y1="144" y2="144" class="grid"/><text x="34" y="148" text-anchor="end">6.6</text><line x1="42" x2="350" y1="89" y2="89" class="grid"/><text x="34" y="93" text-anchor="end">10.0</text><line x1="42" x2="350" y1="34" y2="34" class="grid"/><text x="34" y="38" text-anchor="end">13.3</text><text x="72.8" y="277" text-anchor="middle">1</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 1: median 10.714 s; range 10.099–11.058 s</title><rect x="61.8" y="76.36909231861608" width="22" height="177.63090768138392" opacity=".25" stroke="none"/><path d="M72.8 86.57822876783632V70.66666666666666 M67.8 86.57822876783632H77.8 M67.8 70.66666666666666H77.8" fill="none" stroke-width="1.5"/><circle cx="68.3" cy="86.57822876783632" r="2.5" stroke="none"/><circle cx="71.3" cy="76.50721082836728" r="2.5" stroke="none"/><circle cx="74.3" cy="76.23097380886489" r="2.5" stroke="none"/><circle cx="77.3" cy="70.66666666666666" r="2.5" stroke="none"/><path d="M61.8 76.36909231861608H83.8" stroke-width="2.5"/><text class="value" x="72.8" y="61.66666666666666" text-anchor="middle" stroke="none">10.71</text></g><text x="134.4" y="277" text-anchor="middle">2</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 2: median 10.831 s; range 10.531–10.978 s</title><rect x="123.4" y="74.44034219221228" width="22" height="179.55965780778772" opacity=".25" stroke="none"/><path d="M134.4 79.41001370710978V72.00421367796577 M129.4 79.41001370710978H139.4 M129.4 72.00421367796577H139.4" fill="none" stroke-width="1.5"/><circle cx="129.9" cy="79.41001370710978" r="2.5" stroke="none"/><circle cx="132.9" cy="76.11878796875172" r="2.5" stroke="none"/><circle cx="135.9" cy="72.00421367796577" r="2.5" stroke="none"/><circle cx="138.9" cy="72.76189641567287" r="2.5" stroke="none"/><path d="M123.4 74.44034219221228H145.4" stroke-width="2.5"/><text class="value" x="134.4" y="63.004213677965765" text-anchor="middle" stroke="none">10.83</text></g><text x="196" y="277" text-anchor="middle">4</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 4: median 10.702 s; range 10.545–10.906 s</title><rect x="185" y="76.57250359565494" width="22" height="177.42749640434505" opacity=".25" stroke="none"/><path d="M196 79.17002758415202V73.19057739575044 M191 79.17002758415202H201 M191 73.19057739575044H201" fill="none" stroke-width="1.5"/><circle cx="191.5" cy="79.14449072461305" r="2.5" stroke="none"/><circle cx="194.5" cy="79.17002758415202" r="2.5" stroke="none"/><circle cx="197.5" cy="73.19057739575044" r="2.5" stroke="none"/><circle cx="200.5" cy="74.00051646669677" r="2.5" stroke="none"/><path d="M185 76.57250359565494H207" stroke-width="2.5"/><text class="value" x="196" y="64.19057739575044" text-anchor="middle" stroke="none">10.70</text></g><text x="257.6" y="277" text-anchor="middle">8</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 8: median 10.872 s; range 10.511–10.998 s</title><rect x="246.60000000000002" y="73.75901060836235" width="22" height="180.24098939163764" opacity=".25" stroke="none"/><path d="M257.6 79.74757290079836V71.67425242340515 M252.60000000000002 79.74757290079836H262.6 M252.60000000000002 71.67425242340515H262.6" fill="none" stroke-width="1.5"/><circle cx="253.10000000000002" cy="75.75395532140689" r="2.5" stroke="none"/><circle cx="256.1" cy="79.74757290079836" r="2.5" stroke="none"/><circle cx="259.1" cy="71.76406589531778" r="2.5" stroke="none"/><circle cx="262.1" cy="71.67425242340515" r="2.5" stroke="none"/><path d="M246.60000000000002 73.75901060836235H268.6" stroke-width="2.5"/><text class="value" x="257.6" y="62.67425242340515" text-anchor="middle" stroke="none">10.87</text></g><text x="319.2" y="277" text-anchor="middle">16</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 16: median 10.781 s; range 10.514–11.009 s</title><rect x="308.2" y="75.25638881135168" width="22" height="178.74361118864832" opacity=".25" stroke="none"/><path d="M319.2 79.68951813902102V71.47995049003367 M314.2 79.68951813902102H324.2 M314.2 71.47995049003367H324.2" fill="none" stroke-width="1.5"/><circle cx="314.7" cy="75.18773884926847" r="2.5" stroke="none"/><circle cx="317.7" cy="79.68951813902102" r="2.5" stroke="none"/><circle cx="320.7" cy="75.3250387734349" r="2.5" stroke="none"/><circle cx="323.7" cy="71.47995049003367" r="2.5" stroke="none"/><path d="M308.2 75.25638881135168H330.2" stroke-width="2.5"/><text class="value" x="319.2" y="62.47995049003367" text-anchor="middle" stroke="none">10.78</text></g><text x="196" y="297" text-anchor="middle">prerender.concurrency</text></svg></div><div class="scroll"><table><thead><tr><th>Concurrency</th><th>Median</th><th>Min–max</th><th>Speedup vs 1</th><th>CPU / wall¹</th><th>Peak HTTP²</th></tr></thead><tbody><tr><th>1</th><td>10.714 s</td><td>10.099–11.058 s</td><td>1.00×</td><td>1.02</td><td>1</td></tr><tr><th>2</th><td>10.831 s</td><td>10.531–10.978 s</td><td>0.99×</td><td>1.02</td><td>1</td></tr><tr><th>4</th><td>10.702 s</td><td>10.545–10.906 s</td><td>1.00×</td><td>1.03</td><td>1</td></tr><tr><th>8</th><td>10.872 s</td><td>10.511–10.998 s</td><td>0.99×</td><td>1.03</td><td>1</td></tr><tr><th>16</th><td>10.781 s</td><td>10.514–11.009 s</td><td>0.99×</td><td>1.03</td><td>1</td></tr></tbody></table></div></section><section data-case="cpu-1000" data-view-metric="prerenderMs" ><h2>CPU-bound · 1,000 pages</h2><div class="desktop-chart"><svg viewBox="0 0 720 300" role="img" aria-label="CPU-bound · 1,000 pages, prerender time by concurrency. Bars show medians, dots show all runs, whiskers show minimum and maximum."><text x="54" y="14">Seconds · lower is faster</text><line x1="54" x2="710" y1="254" y2="254" class="grid"/><text x="46" y="258" text-anchor="end">0.0</text><line x1="54" x2="710" y1="199" y2="199" class="grid"/><text x="46" y="203" text-anchor="end">7.1</text><line x1="54" x2="710" y1="144" y2="144" class="grid"/><text x="46" y="148" text-anchor="end">14.2</text><line x1="54" x2="710" y1="89" y2="89" class="grid"/><text x="46" y="93" text-anchor="end">21.3</text><line x1="54" x2="710" y1="34" y2="34" class="grid"/><text x="46" y="38" text-anchor="end">28.4</text><text x="119.6" y="277" text-anchor="middle">1</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 1: median 21.258 s; range 20.051–21.531 s</title><rect x="95.6" y="89.53496187779868" width="48" height="164.46503812220132" opacity=".25" stroke="none"/><path d="M119.6 98.87484032640496V87.42672255756092 M114.6 98.87484032640496H124.6 M114.6 87.42672255756092H124.6" fill="none" stroke-width="1.5"/><circle cx="115.1" cy="98.87484032640496" r="2.5" stroke="none"/><circle cx="118.1" cy="89.8123086977172" r="2.5" stroke="none"/><circle cx="121.1" cy="89.25761505788014" r="2.5" stroke="none"/><circle cx="124.1" cy="87.42672255756092" r="2.5" stroke="none"/><path d="M95.6 89.53496187779868H143.6" stroke-width="2.5"/><text class="value" x="119.6" y="78.42672255756092" text-anchor="middle" stroke="none">21.26</text></g><text x="250.79999999999998" y="277" text-anchor="middle">2</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 2: median 21.376 s; range 20.283–21.596 s</title><rect x="226.79999999999998" y="88.62607834255833" width="48" height="165.37392165744166" opacity=".25" stroke="none"/><path d="M250.79999999999998 97.07966599838862V86.92205880034578 M245.79999999999998 97.07966599838862H255.79999999999998 M245.79999999999998 86.92205880034578H255.79999999999998" fill="none" stroke-width="1.5"/><circle cx="246.29999999999998" cy="97.07966599838862" r="2.5" stroke="none"/><circle cx="249.29999999999998" cy="89.64225935119921" r="2.5" stroke="none"/><circle cx="252.29999999999998" cy="87.60989733391742" r="2.5" stroke="none"/><circle cx="255.29999999999998" cy="86.92205880034578" r="2.5" stroke="none"/><path d="M226.79999999999998 88.62607834255833H274.79999999999995" stroke-width="2.5"/><text class="value" x="250.79999999999998" y="77.92205880034578" text-anchor="middle" stroke="none">21.38</text></g><text x="382" y="277" text-anchor="middle">4</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 4: median 20.857 s; range 20.415–21.272 s</title><rect x="358" y="92.64137532093613" width="48" height="161.35862467906387" opacity=".25" stroke="none"/><path d="M382 96.05851084963828V89.42375969149218 M377 96.05851084963828H387 M377 89.42375969149218H387" fill="none" stroke-width="1.5"/><circle cx="377.5" cy="90.08097556430904" r="2.5" stroke="none"/><circle cx="380.5" cy="89.42375969149218" r="2.5" stroke="none"/><circle cx="383.5" cy="96.05851084963828" r="2.5" stroke="none"/><circle cx="386.5" cy="95.20177507756323" r="2.5" stroke="none"/><path d="M358 92.64137532093613H406" stroke-width="2.5"/><text class="value" x="382" y="80.42375969149218" text-anchor="middle" stroke="none">20.86</text></g><text x="513.1999999999999" y="277" text-anchor="middle">8</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 8: median 21.123 s; range 21.024–22.292 s</title><rect x="489.19999999999993" y="90.57897522648429" width="48" height="163.4210247735157" opacity=".25" stroke="none"/><path d="M513.1999999999999 91.34890014667863V81.5391955822498 M508.19999999999993 91.34890014667863H518.1999999999999 M508.19999999999993 81.5391955822498H518.1999999999999" fill="none" stroke-width="1.5"/><circle cx="508.69999999999993" cy="81.5391955822498" r="2.5" stroke="none"/><circle cx="511.69999999999993" cy="90.00417777101636" r="2.5" stroke="none"/><circle cx="514.6999999999999" cy="91.15377268195218" r="2.5" stroke="none"/><circle cx="517.6999999999999" cy="91.34890014667863" r="2.5" stroke="none"/><path d="M489.19999999999993 90.57897522648429H537.1999999999999" stroke-width="2.5"/><text class="value" x="513.1999999999999" y="72.5391955822498" text-anchor="middle" stroke="none">21.12</text></g><text x="644.4" y="277" text-anchor="middle">16</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 16: median 20.849 s; range 20.258–23.697 s</title><rect x="620.4" y="92.69998150994665" width="48" height="161.30001849005333" opacity=".25" stroke="none"/><path d="M644.4 97.27242800433292V70.66666666666666 M639.4 97.27242800433292H649.4 M639.4 70.66666666666666H649.4" fill="none" stroke-width="1.5"/><circle cx="639.9" cy="70.66666666666666" r="2.5" stroke="none"/><circle cx="642.9" cy="88.63541719703986" r="2.5" stroke="none"/><circle cx="645.9" cy="96.76454582285345" r="2.5" stroke="none"/><circle cx="648.9" cy="97.27242800433292" r="2.5" stroke="none"/><path d="M620.4 92.69998150994665H668.4" stroke-width="2.5"/><text class="value" x="644.4" y="61.66666666666666" text-anchor="middle" stroke="none">20.85</text></g><text x="382" y="297" text-anchor="middle">prerender.concurrency</text></svg></div><div class="mobile-chart"><svg viewBox="0 0 360 300" role="img" aria-label="CPU-bound · 1,000 pages, prerender time by concurrency. Bars show medians, dots show all runs, whiskers show minimum and maximum."><text x="42" y="14">Seconds · lower is faster</text><line x1="42" x2="350" y1="254" y2="254" class="grid"/><text x="34" y="258" text-anchor="end">0.0</text><line x1="42" x2="350" y1="199" y2="199" class="grid"/><text x="34" y="203" text-anchor="end">7.1</text><line x1="42" x2="350" y1="144" y2="144" class="grid"/><text x="34" y="148" text-anchor="end">14.2</text><line x1="42" x2="350" y1="89" y2="89" class="grid"/><text x="34" y="93" text-anchor="end">21.3</text><line x1="42" x2="350" y1="34" y2="34" class="grid"/><text x="34" y="38" text-anchor="end">28.4</text><text x="72.8" y="277" text-anchor="middle">1</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 1: median 21.258 s; range 20.051–21.531 s</title><rect x="61.8" y="89.53496187779868" width="22" height="164.46503812220132" opacity=".25" stroke="none"/><path d="M72.8 98.87484032640496V87.42672255756092 M67.8 98.87484032640496H77.8 M67.8 87.42672255756092H77.8" fill="none" stroke-width="1.5"/><circle cx="68.3" cy="98.87484032640496" r="2.5" stroke="none"/><circle cx="71.3" cy="89.8123086977172" r="2.5" stroke="none"/><circle cx="74.3" cy="89.25761505788014" r="2.5" stroke="none"/><circle cx="77.3" cy="87.42672255756092" r="2.5" stroke="none"/><path d="M61.8 89.53496187779868H83.8" stroke-width="2.5"/><text class="value" x="72.8" y="78.42672255756092" text-anchor="middle" stroke="none">21.26</text></g><text x="134.4" y="277" text-anchor="middle">2</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 2: median 21.376 s; range 20.283–21.596 s</title><rect x="123.4" y="88.62607834255833" width="22" height="165.37392165744166" opacity=".25" stroke="none"/><path d="M134.4 97.07966599838862V86.92205880034578 M129.4 97.07966599838862H139.4 M129.4 86.92205880034578H139.4" fill="none" stroke-width="1.5"/><circle cx="129.9" cy="97.07966599838862" r="2.5" stroke="none"/><circle cx="132.9" cy="89.64225935119921" r="2.5" stroke="none"/><circle cx="135.9" cy="87.60989733391742" r="2.5" stroke="none"/><circle cx="138.9" cy="86.92205880034578" r="2.5" stroke="none"/><path d="M123.4 88.62607834255833H145.4" stroke-width="2.5"/><text class="value" x="134.4" y="77.92205880034578" text-anchor="middle" stroke="none">21.38</text></g><text x="196" y="277" text-anchor="middle">4</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 4: median 20.857 s; range 20.415–21.272 s</title><rect x="185" y="92.64137532093613" width="22" height="161.35862467906387" opacity=".25" stroke="none"/><path d="M196 96.05851084963828V89.42375969149218 M191 96.05851084963828H201 M191 89.42375969149218H201" fill="none" stroke-width="1.5"/><circle cx="191.5" cy="90.08097556430904" r="2.5" stroke="none"/><circle cx="194.5" cy="89.42375969149218" r="2.5" stroke="none"/><circle cx="197.5" cy="96.05851084963828" r="2.5" stroke="none"/><circle cx="200.5" cy="95.20177507756323" r="2.5" stroke="none"/><path d="M185 92.64137532093613H207" stroke-width="2.5"/><text class="value" x="196" y="80.42375969149218" text-anchor="middle" stroke="none">20.86</text></g><text x="257.6" y="277" text-anchor="middle">8</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 8: median 21.123 s; range 21.024–22.292 s</title><rect x="246.60000000000002" y="90.57897522648429" width="22" height="163.4210247735157" opacity=".25" stroke="none"/><path d="M257.6 91.34890014667863V81.5391955822498 M252.60000000000002 91.34890014667863H262.6 M252.60000000000002 81.5391955822498H262.6" fill="none" stroke-width="1.5"/><circle cx="253.10000000000002" cy="81.5391955822498" r="2.5" stroke="none"/><circle cx="256.1" cy="90.00417777101636" r="2.5" stroke="none"/><circle cx="259.1" cy="91.15377268195218" r="2.5" stroke="none"/><circle cx="262.1" cy="91.34890014667863" r="2.5" stroke="none"/><path d="M246.60000000000002 90.57897522648429H268.6" stroke-width="2.5"/><text class="value" x="257.6" y="72.5391955822498" text-anchor="middle" stroke="none">21.12</text></g><text x="319.2" y="277" text-anchor="middle">16</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 16: median 20.849 s; range 20.258–23.697 s</title><rect x="308.2" y="92.69998150994665" width="22" height="161.30001849005333" opacity=".25" stroke="none"/><path d="M319.2 97.27242800433292V70.66666666666666 M314.2 97.27242800433292H324.2 M314.2 70.66666666666666H324.2" fill="none" stroke-width="1.5"/><circle cx="314.7" cy="70.66666666666666" r="2.5" stroke="none"/><circle cx="317.7" cy="88.63541719703986" r="2.5" stroke="none"/><circle cx="320.7" cy="96.76454582285345" r="2.5" stroke="none"/><circle cx="323.7" cy="97.27242800433292" r="2.5" stroke="none"/><path d="M308.2 92.69998150994665H330.2" stroke-width="2.5"/><text class="value" x="319.2" y="61.66666666666666" text-anchor="middle" stroke="none">20.85</text></g><text x="196" y="297" text-anchor="middle">prerender.concurrency</text></svg></div><div class="scroll"><table><thead><tr><th>Concurrency</th><th>Median</th><th>Min–max</th><th>Speedup vs 1</th><th>CPU / wall¹</th><th>Peak HTTP²</th></tr></thead><tbody><tr><th>1</th><td>21.258 s</td><td>20.051–21.531 s</td><td>1.00×</td><td>1.00</td><td>1</td></tr><tr><th>2</th><td>21.376 s</td><td>20.283–21.596 s</td><td>0.99×</td><td>1.01</td><td>1</td></tr><tr><th>4</th><td>20.857 s</td><td>20.415–21.272 s</td><td>1.02×</td><td>1.02</td><td>1</td></tr><tr><th>8</th><td>21.123 s</td><td>21.024–22.292 s</td><td>1.01×</td><td>1.01</td><td>1</td></tr><tr><th>16</th><td>20.849 s</td><td>20.258–23.697 s</td><td>1.02×</td><td>1.01</td><td>1</td></tr></tbody></table></div></section><section data-case="cpu-1000" data-view-metric="buildMs" hidden><h2>CPU-bound · 1,000 pages</h2><div class="desktop-chart"><svg viewBox="0 0 720 300" role="img" aria-label="CPU-bound · 1,000 pages, full build time by concurrency. Bars show medians, dots show all runs, whiskers show minimum and maximum."><text x="54" y="14">Seconds · lower is faster</text><line x1="54" x2="710" y1="254" y2="254" class="grid"/><text x="46" y="258" text-anchor="end">0.0</text><line x1="54" x2="710" y1="199" y2="199" class="grid"/><text x="46" y="203" text-anchor="end">7.6</text><line x1="54" x2="710" y1="144" y2="144" class="grid"/><text x="46" y="148" text-anchor="end">15.1</text><line x1="54" x2="710" y1="89.00000000000003" y2="89.00000000000003" class="grid"/><text x="46" y="93.00000000000003" text-anchor="end">22.7</text><line x1="54" x2="710" y1="34" y2="34" class="grid"/><text x="46" y="38" text-anchor="end">30.2</text><text x="119.6" y="277" text-anchor="middle">1</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 1: median 22.083 s; range 20.849–22.742 s</title><rect x="95.6" y="93.1535645681485" width="48" height="160.8464354318515" opacity=".25" stroke="none"/><path d="M119.6 102.14616213220998V88.35467176310118 M114.6 102.14616213220998H124.6 M114.6 88.35467176310118H124.6" fill="none" stroke-width="1.5"/><circle cx="115.1" cy="102.14616213220998" r="2.5" stroke="none"/><circle cx="118.1" cy="94.2701674501649" r="2.5" stroke="none"/><circle cx="121.1" cy="92.03696168613209" r="2.5" stroke="none"/><circle cx="124.1" cy="88.35467176310118" r="2.5" stroke="none"/><path d="M95.6 93.1535645681485H143.6" stroke-width="2.5"/><text class="value" x="119.6" y="79.35467176310118" text-anchor="middle" stroke="none">22.08</text></g><text x="250.79999999999998" y="277" text-anchor="middle">2</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 2: median 22.283 s; range 21.153–22.620 s</title><rect x="226.79999999999998" y="91.697791318504" width="48" height="162.30220868149598" opacity=".25" stroke="none"/><path d="M250.79999999999998 99.92912933839914V89.24552413066702 M245.79999999999998 99.92912933839914H255.79999999999998 M245.79999999999998 89.24552413066702H255.79999999999998" fill="none" stroke-width="1.5"/><circle cx="246.29999999999998" cy="99.92912933839914" r="2.5" stroke="none"/><circle cx="249.29999999999998" cy="92.7397392655418" r="2.5" stroke="none"/><circle cx="252.29999999999998" cy="90.6558433714662" r="2.5" stroke="none"/><circle cx="255.29999999999998" cy="89.24552413066702" r="2.5" stroke="none"/><path d="M226.79999999999998 91.697791318504H274.79999999999995" stroke-width="2.5"/><text class="value" x="250.79999999999998" y="80.24552413066702" text-anchor="middle" stroke="none">22.28</text></g><text x="382" y="277" text-anchor="middle">4</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 4: median 21.666 s; range 21.141–22.500 s</title><rect x="358" y="96.18997956283212" width="48" height="157.81002043716788" opacity=".25" stroke="none"/><path d="M382 100.01584563520552V90.12220470873137 M377 100.01584563520552H387 M377 90.12220470873137H387" fill="none" stroke-width="1.5"/><circle cx="377.5" cy="94.379932756406" r="2.5" stroke="none"/><circle cx="380.5" cy="90.12220470873137" r="2.5" stroke="none"/><circle cx="383.5" cy="100.01584563520552" r="2.5" stroke="none"/><circle cx="386.5" cy="98.00002636925826" r="2.5" stroke="none"/><path d="M358 96.18997956283212H406" stroke-width="2.5"/><text class="value" x="382" y="81.12220470873137" text-anchor="middle" stroke="none">21.67</text></g><text x="513.1999999999999" y="277" text-anchor="middle">8</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 8: median 22.071 s; range 21.899–23.517 s</title><rect x="489.19999999999993" y="93.2433697298714" width="48" height="160.7566302701286" opacity=".25" stroke="none"/><path d="M513.1999999999999 94.49438840530067V82.70878669655661 M508.19999999999993 94.49438840530067H518.1999999999999 M508.19999999999993 82.70878669655661H518.1999999999999" fill="none" stroke-width="1.5"/><circle cx="508.69999999999993" cy="82.70878669655661" r="2.5" stroke="none"/><circle cx="511.69999999999993" cy="92.01015342778409" r="2.5" stroke="none"/><circle cx="514.6999999999999" cy="94.4765860319587" r="2.5" stroke="none"/><circle cx="517.6999999999999" cy="94.49438840530067" r="2.5" stroke="none"/><path d="M489.19999999999993 93.2433697298714H537.1999999999999" stroke-width="2.5"/><text class="value" x="513.1999999999999" y="73.70878669655661" text-anchor="middle" stroke="none">22.07</text></g><text x="644.4" y="277" text-anchor="middle">16</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 16: median 21.864 s; range 21.164–25.171 s</title><rect x="620.4" y="94.7537077355837" width="48" height="159.2462922644163" opacity=".25" stroke="none"/><path d="M644.4 99.84867785433602V70.66666666666666 M639.4 99.84867785433602H649.4 M639.4 70.66666666666666H649.4" fill="none" stroke-width="1.5"/><circle cx="639.9" cy="70.66666666666666" r="2.5" stroke="none"/><circle cx="642.9" cy="89.83371829199396" r="2.5" stroke="none"/><circle cx="645.9" cy="99.6736971791734" r="2.5" stroke="none"/><circle cx="648.9" cy="99.84867785433602" r="2.5" stroke="none"/><path d="M620.4 94.7537077355837H668.4" stroke-width="2.5"/><text class="value" x="644.4" y="61.66666666666666" text-anchor="middle" stroke="none">21.86</text></g><text x="382" y="297" text-anchor="middle">prerender.concurrency</text></svg></div><div class="mobile-chart"><svg viewBox="0 0 360 300" role="img" aria-label="CPU-bound · 1,000 pages, full build time by concurrency. Bars show medians, dots show all runs, whiskers show minimum and maximum."><text x="42" y="14">Seconds · lower is faster</text><line x1="42" x2="350" y1="254" y2="254" class="grid"/><text x="34" y="258" text-anchor="end">0.0</text><line x1="42" x2="350" y1="199" y2="199" class="grid"/><text x="34" y="203" text-anchor="end">7.6</text><line x1="42" x2="350" y1="144" y2="144" class="grid"/><text x="34" y="148" text-anchor="end">15.1</text><line x1="42" x2="350" y1="89.00000000000003" y2="89.00000000000003" class="grid"/><text x="34" y="93.00000000000003" text-anchor="end">22.7</text><line x1="42" x2="350" y1="34" y2="34" class="grid"/><text x="34" y="38" text-anchor="end">30.2</text><text x="72.8" y="277" text-anchor="middle">1</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 1: median 22.083 s; range 20.849–22.742 s</title><rect x="61.8" y="93.1535645681485" width="22" height="160.8464354318515" opacity=".25" stroke="none"/><path d="M72.8 102.14616213220998V88.35467176310118 M67.8 102.14616213220998H77.8 M67.8 88.35467176310118H77.8" fill="none" stroke-width="1.5"/><circle cx="68.3" cy="102.14616213220998" r="2.5" stroke="none"/><circle cx="71.3" cy="94.2701674501649" r="2.5" stroke="none"/><circle cx="74.3" cy="92.03696168613209" r="2.5" stroke="none"/><circle cx="77.3" cy="88.35467176310118" r="2.5" stroke="none"/><path d="M61.8 93.1535645681485H83.8" stroke-width="2.5"/><text class="value" x="72.8" y="79.35467176310118" text-anchor="middle" stroke="none">22.08</text></g><text x="134.4" y="277" text-anchor="middle">2</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 2: median 22.283 s; range 21.153–22.620 s</title><rect x="123.4" y="91.697791318504" width="22" height="162.30220868149598" opacity=".25" stroke="none"/><path d="M134.4 99.92912933839914V89.24552413066702 M129.4 99.92912933839914H139.4 M129.4 89.24552413066702H139.4" fill="none" stroke-width="1.5"/><circle cx="129.9" cy="99.92912933839914" r="2.5" stroke="none"/><circle cx="132.9" cy="92.7397392655418" r="2.5" stroke="none"/><circle cx="135.9" cy="90.6558433714662" r="2.5" stroke="none"/><circle cx="138.9" cy="89.24552413066702" r="2.5" stroke="none"/><path d="M123.4 91.697791318504H145.4" stroke-width="2.5"/><text class="value" x="134.4" y="80.24552413066702" text-anchor="middle" stroke="none">22.28</text></g><text x="196" y="277" text-anchor="middle">4</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 4: median 21.666 s; range 21.141–22.500 s</title><rect x="185" y="96.18997956283212" width="22" height="157.81002043716788" opacity=".25" stroke="none"/><path d="M196 100.01584563520552V90.12220470873137 M191 100.01584563520552H201 M191 90.12220470873137H201" fill="none" stroke-width="1.5"/><circle cx="191.5" cy="94.379932756406" r="2.5" stroke="none"/><circle cx="194.5" cy="90.12220470873137" r="2.5" stroke="none"/><circle cx="197.5" cy="100.01584563520552" r="2.5" stroke="none"/><circle cx="200.5" cy="98.00002636925826" r="2.5" stroke="none"/><path d="M185 96.18997956283212H207" stroke-width="2.5"/><text class="value" x="196" y="81.12220470873137" text-anchor="middle" stroke="none">21.67</text></g><text x="257.6" y="277" text-anchor="middle">8</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 8: median 22.071 s; range 21.899–23.517 s</title><rect x="246.60000000000002" y="93.2433697298714" width="22" height="160.7566302701286" opacity=".25" stroke="none"/><path d="M257.6 94.49438840530067V82.70878669655661 M252.60000000000002 94.49438840530067H262.6 M252.60000000000002 82.70878669655661H262.6" fill="none" stroke-width="1.5"/><circle cx="253.10000000000002" cy="82.70878669655661" r="2.5" stroke="none"/><circle cx="256.1" cy="92.01015342778409" r="2.5" stroke="none"/><circle cx="259.1" cy="94.4765860319587" r="2.5" stroke="none"/><circle cx="262.1" cy="94.49438840530067" r="2.5" stroke="none"/><path d="M246.60000000000002 93.2433697298714H268.6" stroke-width="2.5"/><text class="value" x="257.6" y="73.70878669655661" text-anchor="middle" stroke="none">22.07</text></g><text x="319.2" y="277" text-anchor="middle">16</text><g fill="var(--chart-1, #326cd6)" stroke="var(--chart-1, #326cd6)"><title>Concurrency 16: median 21.864 s; range 21.164–25.171 s</title><rect x="308.2" y="94.7537077355837" width="22" height="159.2462922644163" opacity=".25" stroke="none"/><path d="M319.2 99.84867785433602V70.66666666666666 M314.2 99.84867785433602H324.2 M314.2 70.66666666666666H324.2" fill="none" stroke-width="1.5"/><circle cx="314.7" cy="70.66666666666666" r="2.5" stroke="none"/><circle cx="317.7" cy="89.83371829199396" r="2.5" stroke="none"/><circle cx="320.7" cy="99.6736971791734" r="2.5" stroke="none"/><circle cx="323.7" cy="99.84867785433602" r="2.5" stroke="none"/><path d="M308.2 94.7537077355837H330.2" stroke-width="2.5"/><text class="value" x="319.2" y="61.66666666666666" text-anchor="middle" stroke="none">21.86</text></g><text x="196" y="297" text-anchor="middle">prerender.concurrency</text></svg></div><div class="scroll"><table><thead><tr><th>Concurrency</th><th>Median</th><th>Min–max</th><th>Speedup vs 1</th><th>CPU / wall¹</th><th>Peak HTTP²</th></tr></thead><tbody><tr><th>1</th><td>22.083 s</td><td>20.849–22.742 s</td><td>1.00×</td><td>1.00</td><td>1</td></tr><tr><th>2</th><td>22.283 s</td><td>21.153–22.620 s</td><td>0.99×</td><td>1.01</td><td>1</td></tr><tr><th>4</th><td>21.666 s</td><td>21.141–22.500 s</td><td>1.02×</td><td>1.02</td><td>1</td></tr><tr><th>8</th><td>22.071 s</td><td>21.899–23.517 s</td><td>1.00×</td><td>1.01</td><td>1</td></tr><tr><th>16</th><td>21.864 s</td><td>21.164–25.171 s</td><td>1.01×</td><td>1.01</td><td>1</td></tr></tbody></table></div></section><section data-case="io-100" data-view-metric="prerenderMs" hidden><h2>Async-wait control · 100 pages</h2><div class="desktop-chart"><svg viewBox="0 0 720 300" role="img" aria-label="Async-wait control · 100 pages, prerender time by concurrency. Bars show medians, dots show all runs, whiskers show minimum and maximum."><text x="54" y="14">Seconds · lower is faster</text><line x1="54" x2="710" y1="254" y2="254" class="grid"/><text x="46" y="258" text-anchor="end">0.0</text><line x1="54" x2="710" y1="199" y2="199" class="grid"/><text x="46" y="203" text-anchor="end">0.6</text><line x1="54" x2="710" y1="144" y2="144" class="grid"/><text x="46" y="148" text-anchor="end">1.3</text><line x1="54" x2="710" y1="89" y2="89" class="grid"/><text x="46" y="93" text-anchor="end">1.9</text><line x1="54" x2="710" y1="34" y2="34" class="grid"/><text x="46" y="38" text-anchor="end">2.5</text><text x="119.6" y="277" text-anchor="middle">1</text><g fill="var(--chart-2, #16836a)" stroke="var(--chart-2, #16836a)"><title>Concurrency 1: median 1.974 s; range 1.966–2.116 s</title><rect x="95.6" y="82.90466616429649" width="48" height="171.0953338357035" opacity=".25" stroke="none"/><path d="M119.6 83.66549428858528V70.66666666666666 M114.6 83.66549428858528H124.6 M114.6 70.66666666666666H124.6" fill="none" stroke-width="1.5"/><circle cx="115.1" cy="70.66666666666666" r="2.5" stroke="none"/><circle cx="118.1" cy="83.66549428858528" r="2.5" stroke="none"/><circle cx="121.1" cy="82.64019821165573" r="2.5" stroke="none"/><circle cx="124.1" cy="83.16913411693717" r="2.5" stroke="none"/><path d="M95.6 82.90466616429649H143.6" stroke-width="2.5"/><text class="value" x="119.6" y="61.66666666666666" text-anchor="middle" stroke="none">1.97</text></g><text x="250.79999999999998" y="277" text-anchor="middle">2</text><g fill="var(--chart-2, #16836a)" stroke="var(--chart-2, #16836a)"><title>Concurrency 2: median 1.058 s; range 1.031–1.063 s</title><rect x="226.79999999999998" y="162.34386943181835" width="48" height="91.65613056818165" opacity=".25" stroke="none"/><path d="M250.79999999999998 164.69881170927636V161.91889656148567 M245.79999999999998 164.69881170927636H255.79999999999998 M245.79999999999998 161.91889656148567H255.79999999999998" fill="none" stroke-width="1.5"/><circle cx="246.29999999999998" cy="162.14880100006883" r="2.5" stroke="none"/><circle cx="249.29999999999998" cy="164.69881170927636" r="2.5" stroke="none"/><circle cx="252.29999999999998" cy="161.91889656148567" r="2.5" stroke="none"/><circle cx="255.29999999999998" cy="162.53893786356778" r="2.5" stroke="none"/><path d="M226.79999999999998 162.34386943181835H274.79999999999995" stroke-width="2.5"/><text class="value" x="250.79999999999998" y="152.91889656148567" text-anchor="middle" stroke="none">1.06</text></g><text x="382" y="277" text-anchor="middle">4</text><g fill="var(--chart-2, #16836a)" stroke="var(--chart-2, #16836a)"><title>Concurrency 4: median 0.565 s; range 0.562–0.678 s</title><rect x="358" y="205.01287370875818" width="48" height="48.98712629124182" opacity=".25" stroke="none"/><path d="M382 205.2926781649012V195.2684730230163 M377 205.2926781649012H387 M377 195.2684730230163H387" fill="none" stroke-width="1.5"/><circle cx="377.5" cy="205.08106908801483" r="2.5" stroke="none"/><circle cx="380.5" cy="204.94467832950147" r="2.5" stroke="none"/><circle cx="383.5" cy="205.2926781649012" r="2.5" stroke="none"/><circle cx="386.5" cy="195.2684730230163" r="2.5" stroke="none"/><path d="M358 205.01287370875818H406" stroke-width="2.5"/><text class="value" x="382" y="186.2684730230163" text-anchor="middle" stroke="none">0.57</text></g><text x="513.1999999999999" y="277" text-anchor="middle">8</text><g fill="var(--chart-2, #16836a)" stroke="var(--chart-2, #16836a)"><title>Concurrency 8: median 0.346 s; range 0.338–0.369 s</title><rect x="489.19999999999993" y="224.0300967595642" width="48" height="29.969903240435798" opacity=".25" stroke="none"/><path d="M513.1999999999999 224.71636030550314V222.03412547720313 M508.19999999999993 224.71636030550314H518.1999999999999 M508.19999999999993 222.03412547720313H518.1999999999999" fill="none" stroke-width="1.5"/><circle cx="508.69999999999993" cy="224.3698190798687" r="2.5" stroke="none"/><circle cx="511.69999999999993" cy="224.71636030550314" r="2.5" stroke="none"/><circle cx="514.6999999999999" cy="222.03412547720313" r="2.5" stroke="none"/><circle cx="517.6999999999999" cy="223.6903744392597" r="2.5" stroke="none"/><path d="M489.19999999999993 224.0300967595642H537.1999999999999" stroke-width="2.5"/><text class="value" x="513.1999999999999" y="213.03412547720313" text-anchor="middle" stroke="none">0.35</text></g><text x="644.4" y="277" text-anchor="middle">16</text><g fill="var(--chart-2, #16836a)" stroke="var(--chart-2, #16836a)"><title>Concurrency 16: median 0.232 s; range 0.228–0.263 s</title><rect x="620.4" y="233.88238348366374" width="48" height="20.117616516336255" opacity=".25" stroke="none"/><path d="M644.4 234.2097878219698V231.2196176121206 M639.4 234.2097878219698H649.4 M639.4 231.2196176121206H649.4" fill="none" stroke-width="1.5"/><circle cx="639.9" cy="234.06554377745502" r="2.5" stroke="none"/><circle cx="642.9" cy="233.69922318987247" r="2.5" stroke="none"/><circle cx="645.9" cy="231.2196176121206" r="2.5" stroke="none"/><circle cx="648.9" cy="234.2097878219698" r="2.5" stroke="none"/><path d="M620.4 233.88238348366374H668.4" stroke-width="2.5"/><text class="value" x="644.4" y="222.2196176121206" text-anchor="middle" stroke="none">0.23</text></g><text x="382" y="297" text-anchor="middle">prerender.concurrency</text></svg></div><div class="mobile-chart"><svg viewBox="0 0 360 300" role="img" aria-label="Async-wait control · 100 pages, prerender time by concurrency. Bars show medians, dots show all runs, whiskers show minimum and maximum."><text x="42" y="14">Seconds · lower is faster</text><line x1="42" x2="350" y1="254" y2="254" class="grid"/><text x="34" y="258" text-anchor="end">0.0</text><line x1="42" x2="350" y1="199" y2="199" class="grid"/><text x="34" y="203" text-anchor="end">0.6</text><line x1="42" x2="350" y1="144" y2="144" class="grid"/><text x="34" y="148" text-anchor="end">1.3</text><line x1="42" x2="350" y1="89" y2="89" class="grid"/><text x="34" y="93" text-anchor="end">1.9</text><line x1="42" x2="350" y1="34" y2="34" class="grid"/><text x="34" y="38" text-anchor="end">2.5</text><text x="72.8" y="277" text-anchor="middle">1</text><g fill="var(--chart-2, #16836a)" stroke="var(--chart-2, #16836a)"><title>Concurrency 1: median 1.974 s; range 1.966–2.116 s</title><rect x="61.8" y="82.90466616429649" width="22" height="171.0953338357035" opacity=".25" stroke="none"/><path d="M72.8 83.66549428858528V70.66666666666666 M67.8 83.66549428858528H77.8 M67.8 70.66666666666666H77.8" fill="none" stroke-width="1.5"/><circle cx="68.3" cy="70.66666666666666" r="2.5" stroke="none"/><circle cx="71.3" cy="83.66549428858528" r="2.5" stroke="none"/><circle cx="74.3" cy="82.64019821165573" r="2.5" stroke="none"/><circle cx="77.3" cy="83.16913411693717" r="2.5" stroke="none"/><path d="M61.8 82.90466616429649H83.8" stroke-width="2.5"/><text class="value" x="72.8" y="61.66666666666666" text-anchor="middle" stroke="none">1.97</text></g><text x="134.4" y="277" text-anchor="middle">2</text><g fill="var(--chart-2, #16836a)" stroke="var(--chart-2, #16836a)"><title>Concurrency 2: median 1.058 s; range 1.031–1.063 s</title><rect x="123.4" y="162.34386943181835" width="22" height="91.65613056818165" opacity=".25" stroke="none"/><path d="M134.4 164.69881170927636V161.91889656148567 M129.4 164.69881170927636H139.4 M129.4 161.91889656148567H139.4" fill="none" stroke-width="1.5"/><circle cx="129.9" cy="162.14880100006883" r="2.5" stroke="none"/><circle cx="132.9" cy="164.69881170927636" r="2.5" stroke="none"/><circle cx="135.9" cy="161.91889656148567" r="2.5" stroke="none"/><circle cx="138.9" cy="162.53893786356778" r="2.5" stroke="none"/><path d="M123.4 162.34386943181835H145.4" stroke-width="2.5"/><text class="value" x="134.4" y="152.91889656148567" text-anchor="middle" stroke="none">1.06</text></g><text x="196" y="277" text-anchor="middle">4</text><g fill="var(--chart-2, #16836a)" stroke="var(--chart-2, #16836a)"><title>Concurrency 4: median 0.565 s; range 0.562–0.678 s</title><rect x="185" y="205.01287370875818" width="22" height="48.98712629124182" opacity=".25" stroke="none"/><path d="M196 205.2926781649012V195.2684730230163 M191 205.2926781649012H201 M191 195.2684730230163H201" fill="none" stroke-width="1.5"/><circle cx="191.5" cy="205.08106908801483" r="2.5" stroke="none"/><circle cx="194.5" cy="204.94467832950147" r="2.5" stroke="none"/><circle cx="197.5" cy="205.2926781649012" r="2.5" stroke="none"/><circle cx="200.5" cy="195.2684730230163" r="2.5" stroke="none"/><path d="M185 205.01287370875818H207" stroke-width="2.5"/><text class="value" x="196" y="186.2684730230163" text-anchor="middle" stroke="none">0.57</text></g><text x="257.6" y="277" text-anchor="middle">8</text><g fill="var(--chart-2, #16836a)" stroke="var(--chart-2, #16836a)"><title>Concurrency 8: median 0.346 s; range 0.338–0.369 s</title><rect x="246.60000000000002" y="224.0300967595642" width="22" height="29.969903240435798" opacity=".25" stroke="none"/><path d="M257.6 224.71636030550314V222.03412547720313 M252.60000000000002 224.71636030550314H262.6 M252.60000000000002 222.03412547720313H262.6" fill="none" stroke-width="1.5"/><circle cx="253.10000000000002" cy="224.3698190798687" r="2.5" stroke="none"/><circle cx="256.1" cy="224.71636030550314" r="2.5" stroke="none"/><circle cx="259.1" cy="222.03412547720313" r="2.5" stroke="none"/><circle cx="262.1" cy="223.6903744392597" r="2.5" stroke="none"/><path d="M246.60000000000002 224.0300967595642H268.6" stroke-width="2.5"/><text class="value" x="257.6" y="213.03412547720313" text-anchor="middle" stroke="none">0.35</text></g><text x="319.2" y="277" text-anchor="middle">16</text><g fill="var(--chart-2, #16836a)" stroke="var(--chart-2, #16836a)"><title>Concurrency 16: median 0.232 s; range 0.228–0.263 s</title><rect x="308.2" y="233.88238348366374" width="22" height="20.117616516336255" opacity=".25" stroke="none"/><path d="M319.2 234.2097878219698V231.2196176121206 M314.2 234.2097878219698H324.2 M314.2 231.2196176121206H324.2" fill="none" stroke-width="1.5"/><circle cx="314.7" cy="234.06554377745502" r="2.5" stroke="none"/><circle cx="317.7" cy="233.69922318987247" r="2.5" stroke="none"/><circle cx="320.7" cy="231.2196176121206" r="2.5" stroke="none"/><circle cx="323.7" cy="234.2097878219698" r="2.5" stroke="none"/><path d="M308.2 233.88238348366374H330.2" stroke-width="2.5"/><text class="value" x="319.2" y="222.2196176121206" text-anchor="middle" stroke="none">0.23</text></g><text x="196" y="297" text-anchor="middle">prerender.concurrency</text></svg></div><div class="scroll"><table><thead><tr><th>Concurrency</th><th>Median</th><th>Min–max</th><th>Speedup vs 1</th><th>CPU / wall¹</th><th>Peak HTTP²</th></tr></thead><tbody><tr><th>1</th><td>1.974 s</td><td>1.966–2.116 s</td><td>1.00×</td><td>0.31</td><td>1</td></tr><tr><th>2</th><td>1.058 s</td><td>1.031–1.063 s</td><td>1.87×</td><td>0.44</td><td>2</td></tr><tr><th>4</th><td>0.565 s</td><td>0.562–0.678 s</td><td>3.49×</td><td>0.60</td><td>4</td></tr><tr><th>8</th><td>0.346 s</td><td>0.338–0.369 s</td><td>5.71×</td><td>0.84</td><td>8</td></tr><tr><th>16</th><td>0.232 s</td><td>0.228–0.263 s</td><td>8.50×</td><td>1.18</td><td>16</td></tr></tbody></table></div></section><section data-case="io-100" data-view-metric="buildMs" hidden><h2>Async-wait control · 100 pages</h2><div class="desktop-chart"><svg viewBox="0 0 720 300" role="img" aria-label="Async-wait control · 100 pages, full build time by concurrency. Bars show medians, dots show all runs, whiskers show minimum and maximum."><text x="54" y="14">Seconds · lower is faster</text><line x1="54" x2="710" y1="254" y2="254" class="grid"/><text x="46" y="258" text-anchor="end">0.0</text><line x1="54" x2="710" y1="199" y2="199" class="grid"/><text x="46" y="203" text-anchor="end">0.9</text><line x1="54" x2="710" y1="144" y2="144" class="grid"/><text x="46" y="148" text-anchor="end">1.9</text><line x1="54" x2="710" y1="89" y2="89" class="grid"/><text x="46" y="93" text-anchor="end">2.8</text><line x1="54" x2="710" y1="34" y2="34" class="grid"/><text x="46" y="38" text-anchor="end">3.8</text><text x="119.6" y="277" text-anchor="middle">1</text><g fill="var(--chart-2, #16836a)" stroke="var(--chart-2, #16836a)"><title>Concurrency 1: median 2.383 s; range 2.358–3.131 s</title><rect x="95.6" y="114.43906472568378" width="48" height="139.56093527431622" opacity=".25" stroke="none"/><path d="M119.6 115.91743842491458V70.66666666666666 M114.6 115.91743842491458H124.6 M114.6 70.66666666666666H124.6" fill="none" stroke-width="1.5"/><circle cx="115.1" cy="70.66666666666666" r="2.5" stroke="none"/><circle cx="118.1" cy="114.77633413295084" r="2.5" stroke="none"/><circle cx="121.1" cy="114.1017953184167" r="2.5" stroke="none"/><circle cx="124.1" cy="115.91743842491458" r="2.5" stroke="none"/><path d="M95.6 114.43906472568378H143.6" stroke-width="2.5"/><text class="value" x="119.6" y="61.66666666666666" text-anchor="middle" stroke="none">2.38</text></g><text x="250.79999999999998" y="277" text-anchor="middle">2</text><g fill="var(--chart-2, #16836a)" stroke="var(--chart-2, #16836a)"><title>Concurrency 2: median 1.509 s; range 1.428–1.614 s</title><rect x="226.79999999999998" y="165.65054425814031" width="48" height="88.34945574185969" opacity=".25" stroke="none"/><path d="M250.79999999999998 170.37827540864376V159.5040776978746 M245.79999999999998 170.37827540864376H255.79999999999998 M245.79999999999998 159.5040776978746H255.79999999999998" fill="none" stroke-width="1.5"/><circle cx="246.29999999999998" cy="162.65383665609392" r="2.5" stroke="none"/><circle cx="249.29999999999998" cy="170.37827540864376" r="2.5" stroke="none"/><circle cx="252.29999999999998" cy="159.5040776978746" r="2.5" stroke="none"/><circle cx="255.29999999999998" cy="168.64725186018669" r="2.5" stroke="none"/><path d="M226.79999999999998 165.65054425814031H274.79999999999995" stroke-width="2.5"/><text class="value" x="250.79999999999998" y="150.5040776978746" text-anchor="middle" stroke="none">1.51</text></g><text x="382" y="277" text-anchor="middle">4</text><g fill="var(--chart-2, #16836a)" stroke="var(--chart-2, #16836a)"><title>Concurrency 4: median 1.016 s; range 0.960–1.117 s</title><rect x="358" y="194.47869105748902" width="48" height="59.521308942510984" opacity=".25" stroke="none"/><path d="M382 197.77210643725758V188.5776886516095 M377 197.77210643725758H387 M377 188.5776886516095H387" fill="none" stroke-width="1.5"/><circle cx="377.5" cy="197.75815491264083" r="2.5" stroke="none"/><circle cx="380.5" cy="197.77210643725758" r="2.5" stroke="none"/><circle cx="383.5" cy="191.19922720233717" r="2.5" stroke="none"/><circle cx="386.5" cy="188.5776886516095" r="2.5" stroke="none"/><path d="M358 194.47869105748902H406" stroke-width="2.5"/><text class="value" x="382" y="179.5776886516095" text-anchor="middle" stroke="none">1.02</text></g><text x="513.1999999999999" y="277" text-anchor="middle">8</text><g fill="var(--chart-2, #16836a)" stroke="var(--chart-2, #16836a)"><title>Concurrency 8: median 0.771 s; range 0.728–0.825 s</title><rect x="489.19999999999993" y="208.8255764287636" width="48" height="45.17442357123639" opacity=".25" stroke="none"/><path d="M513.1999999999999 211.38527714168512V205.68312502580238 M508.19999999999993 211.38527714168512H518.1999999999999 M508.19999999999993 205.68312502580238H518.1999999999999" fill="none" stroke-width="1.5"/><circle cx="508.69999999999993" cy="211.38527714168512" r="2.5" stroke="none"/><circle cx="511.69999999999993" cy="207.13208164355214" r="2.5" stroke="none"/><circle cx="514.6999999999999" cy="205.68312502580238" r="2.5" stroke="none"/><circle cx="517.6999999999999" cy="210.51907121397514" r="2.5" stroke="none"/><path d="M489.19999999999993 208.8255764287636H537.1999999999999" stroke-width="2.5"/><text class="value" x="513.1999999999999" y="196.68312502580238" text-anchor="middle" stroke="none">0.77</text></g><text x="644.4" y="277" text-anchor="middle">16</text><g fill="var(--chart-2, #16836a)" stroke="var(--chart-2, #16836a)"><title>Concurrency 16: median 0.659 s; range 0.628–0.792 s</title><rect x="620.4" y="215.4020387171805" width="48" height="38.59796128281951" opacity=".25" stroke="none"/><path d="M644.4 217.19961281062768V207.6386743741478 M639.4 217.19961281062768H649.4 M639.4 207.6386743741478H649.4" fill="none" stroke-width="1.5"/><circle cx="639.9" cy="214.08534281513963" r="2.5" stroke="none"/><circle cx="642.9" cy="217.19961281062768" r="2.5" stroke="none"/><circle cx="645.9" cy="207.6386743741478" r="2.5" stroke="none"/><circle cx="648.9" cy="216.71873461922132" r="2.5" stroke="none"/><path d="M620.4 215.4020387171805H668.4" stroke-width="2.5"/><text class="value" x="644.4" y="198.6386743741478" text-anchor="middle" stroke="none">0.66</text></g><text x="382" y="297" text-anchor="middle">prerender.concurrency</text></svg></div><div class="mobile-chart"><svg viewBox="0 0 360 300" role="img" aria-label="Async-wait control · 100 pages, full build time by concurrency. Bars show medians, dots show all runs, whiskers show minimum and maximum."><text x="42" y="14">Seconds · lower is faster</text><line x1="42" x2="350" y1="254" y2="254" class="grid"/><text x="34" y="258" text-anchor="end">0.0</text><line x1="42" x2="350" y1="199" y2="199" class="grid"/><text x="34" y="203" text-anchor="end">0.9</text><line x1="42" x2="350" y1="144" y2="144" class="grid"/><text x="34" y="148" text-anchor="end">1.9</text><line x1="42" x2="350" y1="89" y2="89" class="grid"/><text x="34" y="93" text-anchor="end">2.8</text><line x1="42" x2="350" y1="34" y2="34" class="grid"/><text x="34" y="38" text-anchor="end">3.8</text><text x="72.8" y="277" text-anchor="middle">1</text><g fill="var(--chart-2, #16836a)" stroke="var(--chart-2, #16836a)"><title>Concurrency 1: median 2.383 s; range 2.358–3.131 s</title><rect x="61.8" y="114.43906472568378" width="22" height="139.56093527431622" opacity=".25" stroke="none"/><path d="M72.8 115.91743842491458V70.66666666666666 M67.8 115.91743842491458H77.8 M67.8 70.66666666666666H77.8" fill="none" stroke-width="1.5"/><circle cx="68.3" cy="70.66666666666666" r="2.5" stroke="none"/><circle cx="71.3" cy="114.77633413295084" r="2.5" stroke="none"/><circle cx="74.3" cy="114.1017953184167" r="2.5" stroke="none"/><circle cx="77.3" cy="115.91743842491458" r="2.5" stroke="none"/><path d="M61.8 114.43906472568378H83.8" stroke-width="2.5"/><text class="value" x="72.8" y="61.66666666666666" text-anchor="middle" stroke="none">2.38</text></g><text x="134.4" y="277" text-anchor="middle">2</text><g fill="var(--chart-2, #16836a)" stroke="var(--chart-2, #16836a)"><title>Concurrency 2: median 1.509 s; range 1.428–1.614 s</title><rect x="123.4" y="165.65054425814031" width="22" height="88.34945574185969" opacity=".25" stroke="none"/><path d="M134.4 170.37827540864376V159.5040776978746 M129.4 170.37827540864376H139.4 M129.4 159.5040776978746H139.4" fill="none" stroke-width="1.5"/><circle cx="129.9" cy="162.65383665609392" r="2.5" stroke="none"/><circle cx="132.9" cy="170.37827540864376" r="2.5" stroke="none"/><circle cx="135.9" cy="159.5040776978746" r="2.5" stroke="none"/><circle cx="138.9" cy="168.64725186018669" r="2.5" stroke="none"/><path d="M123.4 165.65054425814031H145.4" stroke-width="2.5"/><text class="value" x="134.4" y="150.5040776978746" text-anchor="middle" stroke="none">1.51</text></g><text x="196" y="277" text-anchor="middle">4</text><g fill="var(--chart-2, #16836a)" stroke="var(--chart-2, #16836a)"><title>Concurrency 4: median 1.016 s; range 0.960–1.117 s</title><rect x="185" y="194.47869105748902" width="22" height="59.521308942510984" opacity=".25" stroke="none"/><path d="M196 197.77210643725758V188.5776886516095 M191 197.77210643725758H201 M191 188.5776886516095H201" fill="none" stroke-width="1.5"/><circle cx="191.5" cy="197.75815491264083" r="2.5" stroke="none"/><circle cx="194.5" cy="197.77210643725758" r="2.5" stroke="none"/><circle cx="197.5" cy="191.19922720233717" r="2.5" stroke="none"/><circle cx="200.5" cy="188.5776886516095" r="2.5" stroke="none"/><path d="M185 194.47869105748902H207" stroke-width="2.5"/><text class="value" x="196" y="179.5776886516095" text-anchor="middle" stroke="none">1.02</text></g><text x="257.6" y="277" text-anchor="middle">8</text><g fill="var(--chart-2, #16836a)" stroke="var(--chart-2, #16836a)"><title>Concurrency 8: median 0.771 s; range 0.728–0.825 s</title><rect x="246.60000000000002" y="208.8255764287636" width="22" height="45.17442357123639" opacity=".25" stroke="none"/><path d="M257.6 211.38527714168512V205.68312502580238 M252.60000000000002 211.38527714168512H262.6 M252.60000000000002 205.68312502580238H262.6" fill="none" stroke-width="1.5"/><circle cx="253.10000000000002" cy="211.38527714168512" r="2.5" stroke="none"/><circle cx="256.1" cy="207.13208164355214" r="2.5" stroke="none"/><circle cx="259.1" cy="205.68312502580238" r="2.5" stroke="none"/><circle cx="262.1" cy="210.51907121397514" r="2.5" stroke="none"/><path d="M246.60000000000002 208.8255764287636H268.6" stroke-width="2.5"/><text class="value" x="257.6" y="196.68312502580238" text-anchor="middle" stroke="none">0.77</text></g><text x="319.2" y="277" text-anchor="middle">16</text><g fill="var(--chart-2, #16836a)" stroke="var(--chart-2, #16836a)"><title>Concurrency 16: median 0.659 s; range 0.628–0.792 s</title><rect x="308.2" y="215.4020387171805" width="22" height="38.59796128281951" opacity=".25" stroke="none"/><path d="M319.2 217.19961281062768V207.6386743741478 M314.2 217.19961281062768H324.2 M314.2 207.6386743741478H324.2" fill="none" stroke-width="1.5"/><circle cx="314.7" cy="214.08534281513963" r="2.5" stroke="none"/><circle cx="317.7" cy="217.19961281062768" r="2.5" stroke="none"/><circle cx="320.7" cy="207.6386743741478" r="2.5" stroke="none"/><circle cx="323.7" cy="216.71873461922132" r="2.5" stroke="none"/><path d="M308.2 215.4020387171805H330.2" stroke-width="2.5"/><text class="value" x="319.2" y="198.6386743741478" text-anchor="middle" stroke="none">0.66</text></g><text x="196" y="297" text-anchor="middle">prerender.concurrency</text></svg></div><div class="scroll"><table><thead><tr><th>Concurrency</th><th>Median</th><th>Min–max</th><th>Speedup vs 1</th><th>CPU / wall¹</th><th>Peak HTTP²</th></tr></thead><tbody><tr><th>1</th><td>2.383 s</td><td>2.358–3.131 s</td><td>1.00×</td><td>0.31</td><td>1</td></tr><tr><th>2</th><td>1.509 s</td><td>1.428–1.614 s</td><td>1.58×</td><td>0.44</td><td>2</td></tr><tr><th>4</th><td>1.016 s</td><td>0.960–1.117 s</td><td>2.34×</td><td>0.60</td><td>4</td></tr><tr><th>8</th><td>0.771 s</td><td>0.728–0.825 s</td><td>3.09×</td><td>0.84</td><td>8</td></tr><tr><th>16</th><td>0.659 s</td><td>0.628–0.792 s</td><td>3.62×</td><td>1.18</td><td>16</td></tr></tbody></table></div></section><p class="muted">Bars and labels: median of 4 runs. Dots: every measurement. Whiskers: minimum–maximum. Negative/noisy differences are retained; no extrapolated values.</p>
+<p class="muted">¹ Median process CPU / elapsed time during prerender, including native threads. This is not a count of SSR threads or isolates. ² Maximum simultaneously active preview HTTP requests per run; ranges show variation between runs. These diagnostics always refer to the prerender phase.</p>
+<h2>Workloads and controls</h2><ul><li><strong>CPU:</strong> 500,000 deterministic arithmetic iterations and 200 rendered rows per page, matching the original reproduction. No external data fetching or artificial delay.</li><li><strong>Async wait:</strong> one 15 ms <code>setTimeout</code>, then 200 cheap deterministic rows. This tests overlap, not network or storage performance. Cross-workload timing is not a like-for-like CPU comparison.</li><li>Both use canonical slash-ended URLs with <code>trailingSlash: 'always'</code>. Every page must have one request, one <code>200</code>, and zero redirects. The separate trailing-slash bug cannot inflate these concurrency measurements; the normal reproduction build still uses <code>trailingSlash: 'never'</code>.</li></ul>
+<h2>Method and validation</h2><ul><li>One unmeasured 20-page build per workload at concurrency 1 and the maximum tested concurrency. Fresh Node processes still have their own JIT warmup.</li><li>Fresh Node process and removed dist directory per build. Dependencies and OS filesystem caches remain warm; the host is not otherwise isolated.</li><li>4 repeats at every condition. Forward/reverse paired orders: <code>1 → 2 → 4 → 8 → 16</code>; <code>16 → 8 → 4 → 2 → 1</code>; <code>4 → 8 → 16 → 1 → 2</code>; <code>2 → 1 → 16 → 8 → 4</code>.</li><li>All conditions suppress the same per-page prerender log calls and use the same passive aggregate request observer.</li><li>Prerender: internal start/end log markers after preview startup and before shutdown. Full build: Vite builder creation through buildApp completion; excludes Node/module startup, cleanup, and output validation.</li><li>Every page ID and all 200 rendered row values are checked against independently generated expected content outside the timed interval. Complete HTML SHA-256 digests must match across concurrency settings/repeats after replacing only serialized match update timestamps (u:&lt;13-digit milliseconds&gt;); other output assets must match byte-for-byte within each workload/page-count case.</li></ul>
+<h2>Scope</h2><p>Synthetic workloads on one local Node preview server. Async control uses setTimeout, not real network/storage. No custom worker pool, Cloudflare adapter, or deployment is measured. Speedups are relative to the same case at concurrency 1, not a comparison between workloads. Synthetic CPU time can still change with JIT warmup, GC, filesystem I/O, host load, and queue overhead. Higher I/O concurrency can help without providing parallel JavaScript CPU execution; this experiment does not implement or time a worker pool.</p>
+<details><summary>Machine, versions, and raw measurements</summary><p>Apple M4 · 10 logical CPUs · 16 GiB RAM · darwin 24.6.0 arm64 · Node v24.22.2</p><ul><li><code>@tanstack/react-start</code> 1.168.57</li><li><code>@tanstack/react-router</code> 1.170.38</li><li><code>@tanstack/start-plugin-core</code> 1.171.47</li><li><code>react</code> 19.3.0</li><li><code>react-dom</code> 19.3.0</li><li><code>vite</code> 8.3.0</li><li><code>@vitejs/plugin-react</code> 6.1.1</li></ul><p>Completed 2026-11-03T14:55:51.845Z. Lockfile SHA-256: <code>b077e2d7bb8d3edb4e7d6fb1a5fe7b91ef632c5b7fb8925270252ceab4970399</code>.</p><p>Reproduce with <code>npm ci</code>, then <code>npm run bench</code>. Experiment constants are in <code>benchmark/run.mjs</code>. This report embeds all 80 measured runs and 4 warmups and uses no external assets.</p><pre>{
+  &quot;startedAt&quot;: &quot;2026-11-03T14:42:59.603Z&quot;,
+  &quot;completedAt&quot;: &quot;2026-11-03T14:55:51.845Z&quot;,
+  &quot;system&quot;: {
+    &quot;node&quot;: &quot;v24.22.2&quot;,
+    &quot;platform&quot;: &quot;darwin&quot;,
+    &quot;release&quot;: &quot;24.6.0&quot;,
+    &quot;arch&quot;: &quot;arm64&quot;,
+    &quot;cpu&quot;: &quot;Apple M4&quot;,
+    &quot;logicalCpus&quot;: 10,
+    &quot;availableParallelism&quot;: 10,
+    &quot;memoryBytes&quot;: 17179869184
+  },
+  &quot;versions&quot;: {
+    &quot;@tanstack/react-start&quot;: &quot;1.168.57&quot;,
+    &quot;@tanstack/react-router&quot;: &quot;1.170.38&quot;,
+    &quot;@tanstack/start-plugin-core&quot;: &quot;1.171.47&quot;,
+    &quot;react&quot;: &quot;19.3.0&quot;,
+    &quot;react-dom&quot;: &quot;19.3.0&quot;,
+    &quot;vite&quot;: &quot;8.3.0&quot;,
+    &quot;@vitejs/plugin-react&quot;: &quot;6.1.1&quot;
+  },
+  &quot;lockfileSha256&quot;: &quot;b077e2d7bb8d3edb4e7d6fb1a5fe7b91ef632c5b7fb8925270252ceab4970399&quot;,
+  &quot;methodology&quot;: {
+    &quot;cases&quot;: [
+      {
+        &quot;workload&quot;: &quot;cpu&quot;,
+        &quot;pageCount&quot;: 100
+      },
+      {
+        &quot;workload&quot;: &quot;cpu&quot;,
+        &quot;pageCount&quot;: 500
+      },
+      {
+        &quot;workload&quot;: &quot;cpu&quot;,
+        &quot;pageCount&quot;: 1000
+      },
+      {
+        &quot;workload&quot;: &quot;io&quot;,
+        &quot;pageCount&quot;: 100
+      }
+    ],
+    &quot;concurrencies&quot;: [
+      1,
+      2,
+      4,
+      8,
+      16
+    ],
+    &quot;repeats&quot;: 4,
+    &quot;orders&quot;: [
+      [
+        1,
+        2,
+        4,
+        8,
+        16
+      ],
+      [
+        16,
+        8,
+        4,
+        2,
+        1
+      ],
+      [
+        4,
+        8,
+        16,
+        1,
+        2
+      ],
+      [
+        2,
+        1,
+        16,
+        8,
+        4
+      ]
+    ],
+    &quot;cpuIterations&quot;: 500000,
+    &quot;ioWaitMs&quot;: 15,
+    &quot;renderedRows&quot;: 200,
+    &quot;warmup&quot;: &quot;One unmeasured 20-page build per workload at concurrency 1 and the maximum tested concurrency. Fresh Node processes still have their own JIT warmup.&quot;,
+    &quot;isolation&quot;: &quot;Fresh Node process and removed dist directory per build. Dependencies and OS filesystem caches remain warm; the host is not otherwise isolated.&quot;,
+    &quot;timing&quot;: &quot;Prerender: internal start/end log markers after preview startup and before shutdown. Full build: Vite builder creation through buildApp completion; excludes Node/module startup, cleanup, and output validation.&quot;,
+    &quot;cpuMetric&quot;: &quot;process.cpuUsage delta during the prerender interval, user plus system time. CPU/wall is process CPU milliseconds divided by elapsed milliseconds; native threads are included, so this is not a count of SSR threads or isolates.&quot;,
+    &quot;logging&quot;: &quot;All conditions suppress the same per-page prerender log calls and use the same passive aggregate request observer.&quot;,
+    &quot;redirects&quot;: &quot;Benchmark uses trailingSlash: always and canonical slash-ended paths. Every page must return exactly one 200 response, with zero redirects. No request rewriting. The normal reproduction retains trailingSlash: never.&quot;,
+    &quot;outputCheck&quot;: &quot;Every page ID and all 200 rendered row values are checked against independently generated expected content outside the timed interval. Complete HTML SHA-256 digests must match across concurrency settings/repeats after replacing only serialized match update timestamps (u:&lt;13-digit milliseconds&gt;); other output assets must match byte-for-byte within each workload/page-count case.&quot;,
+    &quot;limits&quot;: &quot;Synthetic workloads on one local Node preview server. Async control uses setTimeout, not real network/storage. No custom worker pool, Cloudflare adapter, or deployment is measured. Speedups are relative to the same case at concurrency 1, not a comparison between workloads.&quot;
+  },
+  &quot;warmups&quot;: [
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 20,
+      &quot;concurrency&quot;: 1,
+      &quot;repeat&quot;: 0,
+      &quot;prerenderMs&quot;: 454.48125000000005,
+      &quot;buildMs&quot;: 1124.350208,
+      &quot;prerenderCpuMs&quot;: 502.806,
+      &quot;requests&quot;: 20,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 20
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;f4ac2afb95d50fa565549f865c7d263ee2afb3cd77f49f3a4a28f03b14b73503&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 20,
+      &quot;concurrency&quot;: 16,
+      &quot;repeat&quot;: 0,
+      &quot;prerenderMs&quot;: 447.887083,
+      &quot;buildMs&quot;: 818.7047500000001,
+      &quot;prerenderCpuMs&quot;: 514.654,
+      &quot;requests&quot;: 20,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 20
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;f4ac2afb95d50fa565549f865c7d263ee2afb3cd77f49f3a4a28f03b14b73503&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;io&quot;,
+      &quot;pageCount&quot;: 20,
+      &quot;concurrency&quot;: 1,
+      &quot;repeat&quot;: 0,
+      &quot;prerenderMs&quot;: 420.537542,
+      &quot;buildMs&quot;: 791.92075,
+      &quot;prerenderCpuMs&quot;: 173.965,
+      &quot;requests&quot;: 20,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 20
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;50de128f96cda7aec662fa2cad262dd9e9addfa282cdd38dc9340ef12a806421&quot;,
+      &quot;assetSha256&quot;: &quot;0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;io&quot;,
+      &quot;pageCount&quot;: 20,
+      &quot;concurrency&quot;: 16,
+      &quot;repeat&quot;: 0,
+      &quot;prerenderMs&quot;: 107.02070800000007,
+      &quot;buildMs&quot;: 491.981541,
+      &quot;prerenderCpuMs&quot;: 146.584,
+      &quot;requests&quot;: 20,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 20
+      },
+      &quot;peakActive&quot;: 16,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;50de128f96cda7aec662fa2cad262dd9e9addfa282cdd38dc9340ef12a806421&quot;,
+      &quot;assetSha256&quot;: &quot;0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b&quot;
+    }
+  ],
+  &quot;runs&quot;: [
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 1,
+      &quot;repeat&quot;: 1,
+      &quot;prerenderMs&quot;: 1981.6756659999999,
+      &quot;buildMs&quot;: 2374.6552500000003,
+      &quot;prerenderCpuMs&quot;: 2117.596,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 2,
+      &quot;repeat&quot;: 1,
+      &quot;prerenderMs&quot;: 1978.4687080000003,
+      &quot;buildMs&quot;: 2354.490625,
+      &quot;prerenderCpuMs&quot;: 2128.96,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 4,
+      &quot;repeat&quot;: 1,
+      &quot;prerenderMs&quot;: 2068.5192500000003,
+      &quot;buildMs&quot;: 2469.2185,
+      &quot;prerenderCpuMs&quot;: 2194.973,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 8,
+      &quot;repeat&quot;: 1,
+      &quot;prerenderMs&quot;: 1993.0310419999998,
+      &quot;buildMs&quot;: 2403.322166,
+      &quot;prerenderCpuMs&quot;: 2168.192,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 16,
+      &quot;repeat&quot;: 1,
+      &quot;prerenderMs&quot;: 2069.8152919999998,
+      &quot;buildMs&quot;: 2458.0623339999997,
+      &quot;prerenderCpuMs&quot;: 2241.077,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 16,
+      &quot;repeat&quot;: 2,
+      &quot;prerenderMs&quot;: 2180.867041,
+      &quot;buildMs&quot;: 2581.495042,
+      &quot;prerenderCpuMs&quot;: 2323.166,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 8,
+      &quot;repeat&quot;: 2,
+      &quot;prerenderMs&quot;: 2203.499416,
+      &quot;buildMs&quot;: 2695.2525,
+      &quot;prerenderCpuMs&quot;: 2352.099,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 4,
+      &quot;repeat&quot;: 2,
+      &quot;prerenderMs&quot;: 2146.4270420000003,
+      &quot;buildMs&quot;: 2628.197833,
+      &quot;prerenderCpuMs&quot;: 2295.046,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 2,
+      &quot;repeat&quot;: 2,
+      &quot;prerenderMs&quot;: 2114.174708,
+      &quot;buildMs&quot;: 2485.232208,
+      &quot;prerenderCpuMs&quot;: 2265.285,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 1,
+      &quot;repeat&quot;: 2,
+      &quot;prerenderMs&quot;: 2198.81125,
+      &quot;buildMs&quot;: 2611.347375,
+      &quot;prerenderCpuMs&quot;: 2333.588,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 4,
+      &quot;repeat&quot;: 3,
+      &quot;prerenderMs&quot;: 2188.96675,
+      &quot;buildMs&quot;: 2611.2920830000003,
+      &quot;prerenderCpuMs&quot;: 2315.718,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 8,
+      &quot;repeat&quot;: 3,
+      &quot;prerenderMs&quot;: 2086.374417,
+      &quot;buildMs&quot;: 2553.134125,
+      &quot;prerenderCpuMs&quot;: 2252.43,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 16,
+      &quot;repeat&quot;: 3,
+      &quot;prerenderMs&quot;: 2036.8781250000002,
+      &quot;buildMs&quot;: 2408.923792,
+      &quot;prerenderCpuMs&quot;: 2201.115,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 1,
+      &quot;repeat&quot;: 3,
+      &quot;prerenderMs&quot;: 2068.5474160000003,
+      &quot;buildMs&quot;: 2485.9364579999997,
+      &quot;prerenderCpuMs&quot;: 2203.312,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 2,
+      &quot;repeat&quot;: 3,
+      &quot;prerenderMs&quot;: 1999.594834,
+      &quot;buildMs&quot;: 2382.446375,
+      &quot;prerenderCpuMs&quot;: 2155.697,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 2,
+      &quot;repeat&quot;: 4,
+      &quot;prerenderMs&quot;: 2044.136625,
+      &quot;buildMs&quot;: 2444.623084,
+      &quot;prerenderCpuMs&quot;: 2196.279,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 1,
+      &quot;repeat&quot;: 4,
+      &quot;prerenderMs&quot;: 1999.189084,
+      &quot;buildMs&quot;: 2372.765,
+      &quot;prerenderCpuMs&quot;: 2135.366,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 16,
+      &quot;repeat&quot;: 4,
+      &quot;prerenderMs&quot;: 2018.054167,
+      &quot;buildMs&quot;: 2391.339334,
+      &quot;prerenderCpuMs&quot;: 2189.287,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 8,
+      &quot;repeat&quot;: 4,
+      &quot;prerenderMs&quot;: 1994.142375,
+      &quot;buildMs&quot;: 2377.5675420000002,
+      &quot;prerenderCpuMs&quot;: 2157.14,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 4,
+      &quot;repeat&quot;: 4,
+      &quot;prerenderMs&quot;: 1988.0634169999998,
+      &quot;buildMs&quot;: 2361.090667,
+      &quot;prerenderCpuMs&quot;: 2144.875,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;1bbb263f3e162bf178d0fd55c1a6603030bd4d75daf979a610abaf47900fd789&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 500,
+      &quot;concurrency&quot;: 1,
+      &quot;repeat&quot;: 1,
+      &quot;prerenderMs&quot;: 9726.977832999999,
+      &quot;buildMs&quot;: 10098.557583999998,
+      &quot;prerenderCpuMs&quot;: 9930.156,
+      &quot;requests&quot;: 500,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 500
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 500,
+      &quot;concurrency&quot;: 2,
+      &quot;repeat&quot;: 1,
+      &quot;prerenderMs&quot;: 9731.824709,
+      &quot;buildMs&quot;: 10530.930459,
+      &quot;prerenderCpuMs&quot;: 9959.102,
+      &quot;requests&quot;: 500,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 500
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 500,
+      &quot;concurrency&quot;: 4,
+      &quot;repeat&quot;: 1,
+      &quot;prerenderMs&quot;: 9792.942041999999,
+      &quot;buildMs&quot;: 10546.946292,
+      &quot;prerenderCpuMs&quot;: 10120.678,
+      &quot;requests&quot;: 500,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 500
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 500,
+      &quot;concurrency&quot;: 8,
+      &quot;repeat&quot;: 1,
+      &quot;prerenderMs&quot;: 9964.544583,
+      &quot;buildMs&quot;: 10751.456833,
+      &quot;prerenderCpuMs&quot;: 10264.548,
+      &quot;requests&quot;: 500,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 500
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 500,
+      &quot;concurrency&quot;: 16,
+      &quot;repeat&quot;: 1,
+      &quot;prerenderMs&quot;: 9912.457292000001,
+      &quot;buildMs&quot;: 10785.609916000001,
+      &quot;prerenderCpuMs&quot;: 10194.049,
+      &quot;requests&quot;: 500,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 500
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 500,
+      &quot;concurrency&quot;: 16,
+      &quot;repeat&quot;: 2,
+      &quot;prerenderMs&quot;: 9740.480834,
+      &quot;buildMs&quot;: 10514.071291999999,
+      &quot;prerenderCpuMs&quot;: 10067.791,
+      &quot;requests&quot;: 500,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 500
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 500,
+      &quot;concurrency&quot;: 8,
+      &quot;repeat&quot;: 2,
+      &quot;prerenderMs&quot;: 9775.037667,
+      &quot;buildMs&quot;: 10510.569540999999,
+      &quot;prerenderCpuMs&quot;: 10117.87,
+      &quot;requests&quot;: 500,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 500
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 500,
+      &quot;concurrency&quot;: 4,
+      &quot;repeat&quot;: 2,
+      &quot;prerenderMs&quot;: 9738.346542,
+      &quot;buildMs&quot;: 10545.405958000001,
+      &quot;prerenderCpuMs&quot;: 10078.743,
+      &quot;requests&quot;: 500,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 500
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 500,
+      &quot;concurrency&quot;: 2,
+      &quot;repeat&quot;: 2,
+      &quot;prerenderMs&quot;: 9933.889291000001,
+      &quot;buildMs&quot;: 10729.450833,
+      &quot;prerenderCpuMs&quot;: 10196.331,
+      &quot;requests&quot;: 500,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 500
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 500,
+      &quot;concurrency&quot;: 1,
+      &quot;repeat&quot;: 2,
+      &quot;prerenderMs&quot;: 9971.715457999999,
+      &quot;buildMs&quot;: 10706.021917,
+      &quot;prerenderCpuMs&quot;: 10119.015,
+      &quot;requests&quot;: 500,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 500
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 500,
+      &quot;concurrency&quot;: 4,
+      &quot;repeat&quot;: 3,
+      &quot;prerenderMs&quot;: 10146.52,
+      &quot;buildMs&quot;: 10906.074834,
+      &quot;prerenderCpuMs&quot;: 10333.802,
+      &quot;requests&quot;: 500,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 500
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 500,
+      &quot;concurrency&quot;: 8,
+      &quot;repeat&quot;: 3,
+      &quot;prerenderMs&quot;: 10215.770083,
+      &quot;buildMs&quot;: 10992.11925,
+      &quot;prerenderCpuMs&quot;: 10492.785,
+      &quot;requests&quot;: 500,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 500
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 500,
+      &quot;concurrency&quot;: 16,
+      &quot;repeat&quot;: 3,
+      &quot;prerenderMs&quot;: 9992.111167000001,
+      &quot;buildMs&quot;: 10777.328249999999,
+      &quot;prerenderCpuMs&quot;: 10308.939,
+      &quot;requests&quot;: 500,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 500
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 500,
+      &quot;concurrency&quot;: 1,
+      &quot;repeat&quot;: 3,
+      &quot;prerenderMs&quot;: 9948.4745,
+      &quot;buildMs&quot;: 10722.684000000001,
+      &quot;prerenderCpuMs&quot;: 10155.473,
+      &quot;requests&quot;: 500,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 500
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 500,
+      &quot;concurrency&quot;: 2,
+      &quot;repeat&quot;: 3,
+      &quot;prerenderMs&quot;: 10225.365833,
+      &quot;buildMs&quot;: 10977.634,
+      &quot;prerenderCpuMs&quot;: 10412.833,
+      &quot;requests&quot;: 500,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 500
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 500,
+      &quot;concurrency&quot;: 2,
+      &quot;repeat&quot;: 4,
+      &quot;prerenderMs&quot;: 10010.291417,
+      &quot;buildMs&quot;: 10931.932042,
+      &quot;prerenderCpuMs&quot;: 10288.206,
+      &quot;requests&quot;: 500,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 500
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 500,
+      &quot;concurrency&quot;: 1,
+      &quot;repeat&quot;: 4,
+      &quot;prerenderMs&quot;: 10288.9915,
+      &quot;buildMs&quot;: 11058.312249999999,
+      &quot;prerenderCpuMs&quot;: 10413.611,
+      &quot;requests&quot;: 500,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 500
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 500,
+      &quot;concurrency&quot;: 16,
+      &quot;repeat&quot;: 4,
+      &quot;prerenderMs&quot;: 10138.821542,
+      &quot;buildMs&quot;: 11009.256542000001,
+      &quot;prerenderCpuMs&quot;: 10377.76,
+      &quot;requests&quot;: 500,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 500
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 500,
+      &quot;concurrency&quot;: 8,
+      &quot;repeat&quot;: 4,
+      &quot;prerenderMs&quot;: 10122.272792,
+      &quot;buildMs&quot;: 10997.536624999999,
+      &quot;prerenderCpuMs&quot;: 10412.912,
+      &quot;requests&quot;: 500,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 500
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 500,
+      &quot;concurrency&quot;: 4,
+      &quot;repeat&quot;: 4,
+      &quot;prerenderMs&quot;: 10039.867792,
+      &quot;buildMs&quot;: 10857.220875,
+      &quot;prerenderCpuMs&quot;: 10273.022,
+      &quot;requests&quot;: 500,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 500
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;f103be7d2c91e7c31ba218f5c24b3c9b140387725cb8f757de9579b47b527553&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 1000,
+      &quot;concurrency&quot;: 1,
+      &quot;repeat&quot;: 1,
+      &quot;prerenderMs&quot;: 20050.874667,
+      &quot;buildMs&quot;: 20848.688667,
+      &quot;prerenderCpuMs&quot;: 20280.397,
+      &quot;requests&quot;: 1000,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 1000
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 1000,
+      &quot;concurrency&quot;: 2,
+      &quot;repeat&quot;: 1,
+      &quot;prerenderMs&quot;: 20282.911916999998,
+      &quot;buildMs&quot;: 21153.074957999997,
+      &quot;prerenderCpuMs&quot;: 20679.054,
+      &quot;requests&quot;: 1000,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 1000
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 1000,
+      &quot;concurrency&quot;: 4,
+      &quot;repeat&quot;: 1,
+      &quot;prerenderMs&quot;: 21187.535416,
+      &quot;buildMs&quot;: 21914.948833,
+      &quot;prerenderCpuMs&quot;: 21311.961,
+      &quot;requests&quot;: 1000,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 1000
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 1000,
+      &quot;concurrency&quot;: 8,
+      &quot;repeat&quot;: 1,
+      &quot;prerenderMs&quot;: 22291.612667,
+      &quot;buildMs&quot;: 23517.332375,
+      &quot;prerenderCpuMs&quot;: 22104.553,
+      &quot;requests&quot;: 1000,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 1000
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 1000,
+      &quot;concurrency&quot;: 16,
+      &quot;repeat&quot;: 1,
+      &quot;prerenderMs&quot;: 23696.953458,
+      &quot;buildMs&quot;: 25170.648583,
+      &quot;prerenderCpuMs&quot;: 23265.276,
+      &quot;requests&quot;: 1000,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 1000
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 1000,
+      &quot;concurrency&quot;: 16,
+      &quot;repeat&quot;: 2,
+      &quot;prerenderMs&quot;: 21374.382667,
+      &quot;buildMs&quot;: 22539.118833,
+      &quot;prerenderCpuMs&quot;: 21419.831,
+      &quot;requests&quot;: 1000,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 1000
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 1000,
+      &quot;concurrency&quot;: 8,
+      &quot;repeat&quot;: 2,
+      &quot;prerenderMs&quot;: 21197.462,
+      &quot;buildMs&quot;: 22240.306375,
+      &quot;prerenderCpuMs&quot;: 21518.599,
+      &quot;requests&quot;: 1000,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 1000
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 1000,
+      &quot;concurrency&quot;: 4,
+      &quot;repeat&quot;: 2,
+      &quot;prerenderMs&quot;: 21272.484582999998,
+      &quot;buildMs&quot;: 22499.511250000003,
+      &quot;prerenderCpuMs&quot;: 21558.149,
+      &quot;requests&quot;: 1000,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 1000
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 1000,
+      &quot;concurrency&quot;: 2,
+      &quot;repeat&quot;: 2,
+      &quot;prerenderMs&quot;: 21244.242167,
+      &quot;buildMs&quot;: 22140.138291,
+      &quot;prerenderCpuMs&quot;: 21490.816,
+      &quot;requests&quot;: 1000,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 1000
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 1000,
+      &quot;concurrency&quot;: 1,
+      &quot;repeat&quot;: 2,
+      &quot;prerenderMs&quot;: 21222.26225,
+      &quot;buildMs&quot;: 21930.019,
+      &quot;prerenderCpuMs&quot;: 21078.68,
+      &quot;requests&quot;: 1000,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 1000
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 1000,
+      &quot;concurrency&quot;: 4,
+      &quot;repeat&quot;: 3,
+      &quot;prerenderMs&quot;: 20414.902459,
+      &quot;buildMs&quot;: 21141.169292,
+      &quot;prerenderCpuMs&quot;: 20821.967,
+      &quot;requests&quot;: 1000,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 1000
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 1000,
+      &quot;concurrency&quot;: 8,
+      &quot;repeat&quot;: 3,
+      &quot;prerenderMs&quot;: 21048.869834,
+      &quot;buildMs&quot;: 21901.678875,
+      &quot;prerenderCpuMs&quot;: 21255.065,
+      &quot;requests&quot;: 1000,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 1000
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 1000,
+      &quot;concurrency&quot;: 16,
+      &quot;repeat&quot;: 3,
+      &quot;prerenderMs&quot;: 20323.643125,
+      &quot;buildMs&quot;: 21188.144375000003,
+      &quot;prerenderCpuMs&quot;: 20845.186,
+      &quot;requests&quot;: 1000,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 1000
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 1000,
+      &quot;concurrency&quot;: 1,
+      &quot;repeat&quot;: 3,
+      &quot;prerenderMs&quot;: 21293.959792,
+      &quot;buildMs&quot;: 22236.62575,
+      &quot;prerenderCpuMs&quot;: 21224.192,
+      &quot;requests&quot;: 1000,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 1000
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 1000,
+      &quot;concurrency&quot;: 2,
+      &quot;repeat&quot;: 3,
+      &quot;prerenderMs&quot;: 21506.937375,
+      &quot;buildMs&quot;: 22426.245625,
+      &quot;prerenderCpuMs&quot;: 21491.929,
+      &quot;requests&quot;: 1000,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 1000
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 1000,
+      &quot;concurrency&quot;: 2,
+      &quot;repeat&quot;: 4,
+      &quot;prerenderMs&quot;: 21595.844707999997,
+      &quot;buildMs&quot;: 22619.874625,
+      &quot;prerenderCpuMs&quot;: 21687.626,
+      &quot;requests&quot;: 1000,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 1000
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 1000,
+      &quot;concurrency&quot;: 1,
+      &quot;repeat&quot;: 4,
+      &quot;prerenderMs&quot;: 21530.613834,
+      &quot;buildMs&quot;: 22742.183708,
+      &quot;prerenderCpuMs&quot;: 21521.757,
+      &quot;requests&quot;: 1000,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 1000
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 1000,
+      &quot;concurrency&quot;: 16,
+      &quot;repeat&quot;: 4,
+      &quot;prerenderMs&quot;: 20257.99625,
+      &quot;buildMs&quot;: 21164.120499999997,
+      &quot;prerenderCpuMs&quot;: 20723.14,
+      &quot;requests&quot;: 1000,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 1000
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 1000,
+      &quot;concurrency&quot;: 8,
+      &quot;repeat&quot;: 4,
+      &quot;prerenderMs&quot;: 21023.648417,
+      &quot;buildMs&quot;: 21899.234708,
+      &quot;prerenderCpuMs&quot;: 21298.282,
+      &quot;requests&quot;: 1000,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 1000
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;cpu&quot;,
+      &quot;pageCount&quot;: 1000,
+      &quot;concurrency&quot;: 4,
+      &quot;repeat&quot;: 4,
+      &quot;prerenderMs&quot;: 20525.640792,
+      &quot;buildMs&quot;: 21417.930083,
+      &quot;prerenderCpuMs&quot;: 20919.615,
+      &quot;requests&quot;: 1000,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 1000
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;c898a0cf13e8a49564ad913b76bdda1526502da9957a6a36877b516f8742aefd&quot;,
+      &quot;assetSha256&quot;: &quot;329c89c69328a7861ef4271843ea7a238e01f332868a98474b856f3a61e70559&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;io&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 1,
+      &quot;repeat&quot;: 1,
+      &quot;prerenderMs&quot;: 2115.621834,
+      &quot;buildMs&quot;: 3130.76775,
+      &quot;prerenderCpuMs&quot;: 683.822,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812&quot;,
+      &quot;assetSha256&quot;: &quot;0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;io&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 2,
+      &quot;repeat&quot;: 1,
+      &quot;prerenderMs&quot;: 1059.940375,
+      &quot;buildMs&quot;: 1559.9106669999999,
+      &quot;prerenderCpuMs&quot;: 468.643,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 2,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812&quot;,
+      &quot;assetSha256&quot;: &quot;0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;io&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 4,
+      &quot;repeat&quot;: 1,
+      &quot;prerenderMs&quot;: 564.5125,
+      &quot;buildMs&quot;: 960.4372079999999,
+      &quot;prerenderCpuMs&quot;: 335.338,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 4,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812&quot;,
+      &quot;assetSha256&quot;: &quot;0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;io&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 8,
+      &quot;repeat&quot;: 1,
+      &quot;prerenderMs&quot;: 341.925042,
+      &quot;buildMs&quot;: 727.7280000000001,
+      &quot;prerenderCpuMs&quot;: 278.087,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 8,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812&quot;,
+      &quot;assetSha256&quot;: &quot;0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;io&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 16,
+      &quot;repeat&quot;: 1,
+      &quot;prerenderMs&quot;: 230.03875000000005,
+      &quot;buildMs&quot;: 681.6192080000001,
+      &quot;prerenderCpuMs&quot;: 295.418,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 16,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812&quot;,
+      &quot;assetSha256&quot;: &quot;0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;io&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 16,
+      &quot;repeat&quot;: 2,
+      &quot;prerenderMs&quot;: 234.26600000000002,
+      &quot;buildMs&quot;: 628.437084,
+      &quot;prerenderCpuMs&quot;: 271.231,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 16,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812&quot;,
+      &quot;assetSha256&quot;: &quot;0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;io&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 8,
+      &quot;repeat&quot;: 2,
+      &quot;prerenderMs&quot;: 337.92604100000005,
+      &quot;buildMs&quot;: 800.359458,
+      &quot;prerenderCpuMs&quot;: 280.743,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 8,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812&quot;,
+      &quot;assetSha256&quot;: &quot;0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;io&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 4,
+      &quot;repeat&quot;: 2,
+      &quot;prerenderMs&quot;: 566.086416,
+      &quot;buildMs&quot;: 960.198959,
+      &quot;prerenderCpuMs&quot;: 343.923,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 4,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812&quot;,
+      &quot;assetSha256&quot;: &quot;0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;io&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 2,
+      &quot;repeat&quot;: 2,
+      &quot;prerenderMs&quot;: 1030.513875,
+      &quot;buildMs&quot;: 1428.001083,
+      &quot;prerenderCpuMs&quot;: 443.453,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 2,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812&quot;,
+      &quot;assetSha256&quot;: &quot;0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;io&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 1,
+      &quot;repeat&quot;: 2,
+      &quot;prerenderMs&quot;: 1965.6185420000002,
+      &quot;buildMs&quot;: 2377.510708,
+      &quot;prerenderCpuMs&quot;: 610.015,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812&quot;,
+      &quot;assetSha256&quot;: &quot;0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;io&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 4,
+      &quot;repeat&quot;: 3,
+      &quot;prerenderMs&quot;: 562.0705829999999,
+      &quot;buildMs&quot;: 1072.443459,
+      &quot;prerenderCpuMs&quot;: 337.164,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 4,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812&quot;,
+      &quot;assetSha256&quot;: &quot;0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;io&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 8,
+      &quot;repeat&quot;: 3,
+      &quot;prerenderMs&quot;: 368.878375,
+      &quot;buildMs&quot;: 825.103167,
+      &quot;prerenderCpuMs&quot;: 331.039,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 8,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812&quot;,
+      &quot;assetSha256&quot;: &quot;0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;io&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 16,
+      &quot;repeat&quot;: 3,
+      &quot;prerenderMs&quot;: 262.880042,
+      &quot;buildMs&quot;: 791.708417,
+      &quot;prerenderCpuMs&quot;: 316.021,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 16,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812&quot;,
+      &quot;assetSha256&quot;: &quot;0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;io&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 1,
+      &quot;repeat&quot;: 3,
+      &quot;prerenderMs&quot;: 1977.450208,
+      &quot;buildMs&quot;: 2389.02975,
+      &quot;prerenderCpuMs&quot;: 571.209,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812&quot;,
+      &quot;assetSha256&quot;: &quot;0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;io&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 2,
+      &quot;repeat&quot;: 3,
+      &quot;prerenderMs&quot;: 1062.5934160000002,
+      &quot;buildMs&quot;: 1613.698833,
+      &quot;prerenderCpuMs&quot;: 454.133,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 2,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812&quot;,
+      &quot;assetSha256&quot;: &quot;0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;io&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 2,
+      &quot;repeat&quot;: 4,
+      &quot;prerenderMs&quot;: 1055.438291,
+      &quot;buildMs&quot;: 1457.561625,
+      &quot;prerenderCpuMs&quot;: 472.851,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 2,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812&quot;,
+      &quot;assetSha256&quot;: &quot;0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;io&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 1,
+      &quot;repeat&quot;: 4,
+      &quot;prerenderMs&quot;: 1971.3464170000002,
+      &quot;buildMs&quot;: 2358.024167,
+      &quot;prerenderCpuMs&quot;: 605.099,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 1,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812&quot;,
+      &quot;assetSha256&quot;: &quot;0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;io&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 16,
+      &quot;repeat&quot;: 4,
+      &quot;prerenderMs&quot;: 228.374209,
+      &quot;buildMs&quot;: 636.649,
+      &quot;prerenderCpuMs&quot;: 264.212,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 16,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812&quot;,
+      &quot;assetSha256&quot;: &quot;0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;io&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 8,
+      &quot;repeat&quot;: 4,
+      &quot;prerenderMs&quot;: 349.765667,
+      &quot;buildMs&quot;: 742.520125,
+      &quot;prerenderCpuMs&quot;: 296.526,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 8,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812&quot;,
+      &quot;assetSha256&quot;: &quot;0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b&quot;
+    },
+    {
+      &quot;workload&quot;: &quot;io&quot;,
+      &quot;pageCount&quot;: 100,
+      &quot;concurrency&quot;: 4,
+      &quot;repeat&quot;: 4,
+      &quot;prerenderMs&quot;: 677.7474590000002,
+      &quot;buildMs&quot;: 1117.2112499999998,
+      &quot;prerenderCpuMs&quot;: 410.665,
+      &quot;requests&quot;: 100,
+      &quot;responses&quot;: {
+        &quot;200&quot;: 100
+      },
+      &quot;peakActive&quot;: 4,
+      &quot;activeAtClose&quot;: 0,
+      &quot;exactRequestPaths&quot;: true,
+      &quot;pageSha256&quot;: &quot;ea23c0982ad1a070ab99ff55ba30c180eeee2a400fb75906604c500ccfbcb812&quot;,
+      &quot;assetSha256&quot;: &quot;0f6f8a57abc0dff57cfa8b1800e282f0c642f1d7c4190e67850b19c57a37ea4b&quot;
+    }
+  ]
+}</pre></details>
+<details><summary>All individual measured runs</summary><div class="scroll"><table><thead><tr><th>Workload</th><th>Pages</th><th>Concurrency</th><th>Repeat</th><th>Prerender (s)</th><th>Build (s)</th><th>CPU / wall</th><th>Peak HTTP</th></tr></thead><tbody><tr><th>cpu</th><td>100</td><td>1</td><td>1</td><td>1.982</td><td>2.375</td><td>1.07</td><td>1</td></tr><tr><th>cpu</th><td>100</td><td>2</td><td>1</td><td>1.978</td><td>2.354</td><td>1.08</td><td>1</td></tr><tr><th>cpu</th><td>100</td><td>4</td><td>1</td><td>2.069</td><td>2.469</td><td>1.06</td><td>1</td></tr><tr><th>cpu</th><td>100</td><td>8</td><td>1</td><td>1.993</td><td>2.403</td><td>1.09</td><td>1</td></tr><tr><th>cpu</th><td>100</td><td>16</td><td>1</td><td>2.070</td><td>2.458</td><td>1.08</td><td>1</td></tr><tr><th>cpu</th><td>100</td><td>16</td><td>2</td><td>2.181</td><td>2.581</td><td>1.07</td><td>1</td></tr><tr><th>cpu</th><td>100</td><td>8</td><td>2</td><td>2.203</td><td>2.695</td><td>1.07</td><td>1</td></tr><tr><th>cpu</th><td>100</td><td>4</td><td>2</td><td>2.146</td><td>2.628</td><td>1.07</td><td>1</td></tr><tr><th>cpu</th><td>100</td><td>2</td><td>2</td><td>2.114</td><td>2.485</td><td>1.07</td><td>1</td></tr><tr><th>cpu</th><td>100</td><td>1</td><td>2</td><td>2.199</td><td>2.611</td><td>1.06</td><td>1</td></tr><tr><th>cpu</th><td>100</td><td>4</td><td>3</td><td>2.189</td><td>2.611</td><td>1.06</td><td>1</td></tr><tr><th>cpu</th><td>100</td><td>8</td><td>3</td><td>2.086</td><td>2.553</td><td>1.08</td><td>1</td></tr><tr><th>cpu</th><td>100</td><td>16</td><td>3</td><td>2.037</td><td>2.409</td><td>1.08</td><td>1</td></tr><tr><th>cpu</th><td>100</td><td>1</td><td>3</td><td>2.069</td><td>2.486</td><td>1.07</td><td>1</td></tr><tr><th>cpu</th><td>100</td><td>2</td><td>3</td><td>2.000</td><td>2.382</td><td>1.08</td><td>1</td></tr><tr><th>cpu</th><td>100</td><td>2</td><td>4</td><td>2.044</td><td>2.445</td><td>1.07</td><td>1</td></tr><tr><th>cpu</th><td>100</td><td>1</td><td>4</td><td>1.999</td><td>2.373</td><td>1.07</td><td>1</td></tr><tr><th>cpu</th><td>100</td><td>16</td><td>4</td><td>2.018</td><td>2.391</td><td>1.08</td><td>1</td></tr><tr><th>cpu</th><td>100</td><td>8</td><td>4</td><td>1.994</td><td>2.378</td><td>1.08</td><td>1</td></tr><tr><th>cpu</th><td>100</td><td>4</td><td>4</td><td>1.988</td><td>2.361</td><td>1.08</td><td>1</td></tr><tr><th>cpu</th><td>500</td><td>1</td><td>1</td><td>9.727</td><td>10.099</td><td>1.02</td><td>1</td></tr><tr><th>cpu</th><td>500</td><td>2</td><td>1</td><td>9.732</td><td>10.531</td><td>1.02</td><td>1</td></tr><tr><th>cpu</th><td>500</td><td>4</td><td>1</td><td>9.793</td><td>10.547</td><td>1.03</td><td>1</td></tr><tr><th>cpu</th><td>500</td><td>8</td><td>1</td><td>9.965</td><td>10.751</td><td>1.03</td><td>1</td></tr><tr><th>cpu</th><td>500</td><td>16</td><td>1</td><td>9.912</td><td>10.786</td><td>1.03</td><td>1</td></tr><tr><th>cpu</th><td>500</td><td>16</td><td>2</td><td>9.740</td><td>10.514</td><td>1.03</td><td>1</td></tr><tr><th>cpu</th><td>500</td><td>8</td><td>2</td><td>9.775</td><td>10.511</td><td>1.04</td><td>1</td></tr><tr><th>cpu</th><td>500</td><td>4</td><td>2</td><td>9.738</td><td>10.545</td><td>1.03</td><td>1</td></tr><tr><th>cpu</th><td>500</td><td>2</td><td>2</td><td>9.934</td><td>10.729</td><td>1.03</td><td>1</td></tr><tr><th>cpu</th><td>500</td><td>1</td><td>2</td><td>9.972</td><td>10.706</td><td>1.01</td><td>1</td></tr><tr><th>cpu</th><td>500</td><td>4</td><td>3</td><td>10.147</td><td>10.906</td><td>1.02</td><td>1</td></tr><tr><th>cpu</th><td>500</td><td>8</td><td>3</td><td>10.216</td><td>10.992</td><td>1.03</td><td>1</td></tr><tr><th>cpu</th><td>500</td><td>16</td><td>3</td><td>9.992</td><td>10.777</td><td>1.03</td><td>1</td></tr><tr><th>cpu</th><td>500</td><td>1</td><td>3</td><td>9.948</td><td>10.723</td><td>1.02</td><td>1</td></tr><tr><th>cpu</th><td>500</td><td>2</td><td>3</td><td>10.225</td><td>10.978</td><td>1.02</td><td>1</td></tr><tr><th>cpu</th><td>500</td><td>2</td><td>4</td><td>10.010</td><td>10.932</td><td>1.03</td><td>1</td></tr><tr><th>cpu</th><td>500</td><td>1</td><td>4</td><td>10.289</td><td>11.058</td><td>1.01</td><td>1</td></tr><tr><th>cpu</th><td>500</td><td>16</td><td>4</td><td>10.139</td><td>11.009</td><td>1.02</td><td>1</td></tr><tr><th>cpu</th><td>500</td><td>8</td><td>4</td><td>10.122</td><td>10.998</td><td>1.03</td><td>1</td></tr><tr><th>cpu</th><td>500</td><td>4</td><td>4</td><td>10.040</td><td>10.857</td><td>1.02</td><td>1</td></tr><tr><th>cpu</th><td>1,000</td><td>1</td><td>1</td><td>20.051</td><td>20.849</td><td>1.01</td><td>1</td></tr><tr><th>cpu</th><td>1,000</td><td>2</td><td>1</td><td>20.283</td><td>21.153</td><td>1.02</td><td>1</td></tr><tr><th>cpu</th><td>1,000</td><td>4</td><td>1</td><td>21.188</td><td>21.915</td><td>1.01</td><td>1</td></tr><tr><th>cpu</th><td>1,000</td><td>8</td><td>1</td><td>22.292</td><td>23.517</td><td>0.99</td><td>1</td></tr><tr><th>cpu</th><td>1,000</td><td>16</td><td>1</td><td>23.697</td><td>25.171</td><td>0.98</td><td>1</td></tr><tr><th>cpu</th><td>1,000</td><td>16</td><td>2</td><td>21.374</td><td>22.539</td><td>1.00</td><td>1</td></tr><tr><th>cpu</th><td>1,000</td><td>8</td><td>2</td><td>21.197</td><td>22.240</td><td>1.02</td><td>1</td></tr><tr><th>cpu</th><td>1,000</td><td>4</td><td>2</td><td>21.272</td><td>22.500</td><td>1.01</td><td>1</td></tr><tr><th>cpu</th><td>1,000</td><td>2</td><td>2</td><td>21.244</td><td>22.140</td><td>1.01</td><td>1</td></tr><tr><th>cpu</th><td>1,000</td><td>1</td><td>2</td><td>21.222</td><td>21.930</td><td>0.99</td><td>1</td></tr><tr><th>cpu</th><td>1,000</td><td>4</td><td>3</td><td>20.415</td><td>21.141</td><td>1.02</td><td>1</td></tr><tr><th>cpu</th><td>1,000</td><td>8</td><td>3</td><td>21.049</td><td>21.902</td><td>1.01</td><td>1</td></tr><tr><th>cpu</th><td>1,000</td><td>16</td><td>3</td><td>20.324</td><td>21.188</td><td>1.03</td><td>1</td></tr><tr><th>cpu</th><td>1,000</td><td>1</td><td>3</td><td>21.294</td><td>22.237</td><td>1.00</td><td>1</td></tr><tr><th>cpu</th><td>1,000</td><td>2</td><td>3</td><td>21.507</td><td>22.426</td><td>1.00</td><td>1</td></tr><tr><th>cpu</th><td>1,000</td><td>2</td><td>4</td><td>21.596</td><td>22.620</td><td>1.00</td><td>1</td></tr><tr><th>cpu</th><td>1,000</td><td>1</td><td>4</td><td>21.531</td><td>22.742</td><td>1.00</td><td>1</td></tr><tr><th>cpu</th><td>1,000</td><td>16</td><td>4</td><td>20.258</td><td>21.164</td><td>1.02</td><td>1</td></tr><tr><th>cpu</th><td>1,000</td><td>8</td><td>4</td><td>21.024</td><td>21.899</td><td>1.01</td><td>1</td></tr><tr><th>cpu</th><td>1,000</td><td>4</td><td>4</td><td>20.526</td><td>21.418</td><td>1.02</td><td>1</td></tr><tr><th>io</th><td>100</td><td>1</td><td>1</td><td>2.116</td><td>3.131</td><td>0.32</td><td>1</td></tr><tr><th>io</th><td>100</td><td>2</td><td>1</td><td>1.060</td><td>1.560</td><td>0.44</td><td>2</td></tr><tr><th>io</th><td>100</td><td>4</td><td>1</td><td>0.565</td><td>0.960</td><td>0.59</td><td>4</td></tr><tr><th>io</th><td>100</td><td>8</td><td>1</td><td>0.342</td><td>0.728</td><td>0.81</td><td>8</td></tr><tr><th>io</th><td>100</td><td>16</td><td>1</td><td>0.230</td><td>0.682</td><td>1.28</td><td>16</td></tr><tr><th>io</th><td>100</td><td>16</td><td>2</td><td>0.234</td><td>0.628</td><td>1.16</td><td>16</td></tr><tr><th>io</th><td>100</td><td>8</td><td>2</td><td>0.338</td><td>0.800</td><td>0.83</td><td>8</td></tr><tr><th>io</th><td>100</td><td>4</td><td>2</td><td>0.566</td><td>0.960</td><td>0.61</td><td>4</td></tr><tr><th>io</th><td>100</td><td>2</td><td>2</td><td>1.031</td><td>1.428</td><td>0.43</td><td>2</td></tr><tr><th>io</th><td>100</td><td>1</td><td>2</td><td>1.966</td><td>2.378</td><td>0.31</td><td>1</td></tr><tr><th>io</th><td>100</td><td>4</td><td>3</td><td>0.562</td><td>1.072</td><td>0.60</td><td>4</td></tr><tr><th>io</th><td>100</td><td>8</td><td>3</td><td>0.369</td><td>0.825</td><td>0.90</td><td>8</td></tr><tr><th>io</th><td>100</td><td>16</td><td>3</td><td>0.263</td><td>0.792</td><td>1.20</td><td>16</td></tr><tr><th>io</th><td>100</td><td>1</td><td>3</td><td>1.977</td><td>2.389</td><td>0.29</td><td>1</td></tr><tr><th>io</th><td>100</td><td>2</td><td>3</td><td>1.063</td><td>1.614</td><td>0.43</td><td>2</td></tr><tr><th>io</th><td>100</td><td>2</td><td>4</td><td>1.055</td><td>1.458</td><td>0.45</td><td>2</td></tr><tr><th>io</th><td>100</td><td>1</td><td>4</td><td>1.971</td><td>2.358</td><td>0.31</td><td>1</td></tr><tr><th>io</th><td>100</td><td>16</td><td>4</td><td>0.228</td><td>0.637</td><td>1.16</td><td>16</td></tr><tr><th>io</th><td>100</td><td>8</td><td>4</td><td>0.350</td><td>0.743</td><td>0.85</td><td>8</td></tr><tr><th>io</th><td>100</td><td>4</td><td>4</td><td>0.678</td><td>1.117</td><td>0.61</td><td>4</td></tr></tbody></table></div></details>
+<p class="muted">Related: <a href="https://github.com/TanStack/router/issues/8483">concurrency issue #8483</a> · <a href="https://github.com/TanStack/router/issues/8850">separate redirect issue #8850</a>.</p>
+</main><script>
+let metric = 'prerenderMs';
+const select = document.getElementById('case-select');
+function updateViews() {
+  document.querySelectorAll('[data-view-metric]').forEach(view => {
+    view.hidden = view.dataset.case !== select.value || view.dataset.viewMetric !== metric;
+  });
+  document.querySelectorAll('[data-metric]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.metric === metric)));
+}
+select.addEventListener('change', updateViews);
+document.querySelectorAll('[data-metric]').forEach(button => button.addEventListener('click', () => { metric = button.dataset.metric; updateViews(); }));
+updateViews();
+</script></body></html>

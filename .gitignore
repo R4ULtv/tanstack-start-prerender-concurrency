@@ -3,3 +3,6 @@ dist
 .output
 .tanstack
 src/routeTree.gen.ts
+benchmark/.run.json
+benchmark/.metrics.json
+benchmark/results/*.log

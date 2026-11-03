@@ -2,7 +2,7 @@ import { createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 
 export function getRouter() {
-  return createRouter({ routeTree });
+  return createRouter({ routeTree, trailingSlash: __PRERENDER_TRAILING_SLASH__ });
 }
 
 declare module "@tanstack/react-router" {
